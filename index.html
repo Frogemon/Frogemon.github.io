@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#26342B">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
-  /* forest-green band for the mark, then a deck of photos on cream */
+  /* forest-green band for the mark, then the photos on a turning wheel */
   :root { --forest: #1F2A23; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #17201A; --oak: #C98B4E; color-scheme: dark }
   * { box-sizing: border-box }
   html, body { margin: 0 }
@@ -20,25 +20,29 @@
   header img { width: clamp(140px, 20vw, 220px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 16px 30px rgb(0 0 0 / .4)) }
   header .rule { width: 60px; height: 3px; border-radius: 3px; background: var(--oak) }
 
-  /* the deck: cards stacked, the top one follows your finger and flies off when flung */
+  /* the page: logo band, then the photo field down to the bottom of the screen */
   body { min-height: 100svh; display: flex; flex-direction: column }
   .field { position: relative; isolation: isolate; flex: 1; display: flex; flex-direction: column; justify-content: space-between }
-  main { display: grid; justify-items: center; gap: 26px; padding: clamp(40px, 7vw, 76px) 20px clamp(56px, 8vw, 96px) }
+  main { display: grid; justify-items: center; gap: 22px; padding: clamp(28px, 5vw, 56px) max(12px, env(safe-area-inset-left)) clamp(48px, 7vw, 86px); overflow: hidden }
   /* swell: a fine grid of green dots that rises and falls in slow rolling waves, quiet behind the photos */
   #swell { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
     -webkit-mask-image: linear-gradient(transparent, #000 110px); mask-image: linear-gradient(transparent, #000 110px) }
-  .row { display: flex; align-items: center; gap: clamp(14px, 4vw, 44px) }
-  .deck { position: relative; margin-bottom: 18px; width: min(78vw, 400px); aspect-ratio: 4 / 5; touch-action: pan-y; user-select: none; -webkit-user-select: none }
-  .card { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; background: #EDE6D8; cursor: grab;
-    box-shadow: 0 2px 4px rgb(0 0 0 / .2), 0 28px 60px -24px rgb(0 0 0 / .75);
-    transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .45s; will-change: transform }
-  .card.dragging { transition: none; cursor: grabbing }
+  /* the wheel: photos around a ring seen from the front; drag to turn it, it settles on the nearest photo */
+  .row { width: 100%; max-width: 1240px; display: flex; align-items: center; gap: clamp(10px, 2vw, 24px) }
+  .wheel { --cw: clamp(190px, 24vw, 310px); position: relative; flex: 1; min-width: 0; height: calc(var(--cw) * 1.25 + 60px); perspective: 1500px;
+    touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab }
+  .wheel.dragging { cursor: grabbing }
+  .wheel:focus-visible { outline: 2px solid var(--oak); outline-offset: 6px; border-radius: 20px }
+  .ring { position: absolute; inset: 0; transform-style: preserve-3d }
+  .card { position: absolute; left: 50%; top: 30px; width: var(--cw); aspect-ratio: 4 / 5; margin-left: calc(var(--cw) / -2); border-radius: 20px; overflow: hidden;
+    background: #EDE6D8; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    box-shadow: 0 2px 4px rgb(0 0 0 / .2), 0 30px 60px -26px rgb(0 0 0 / .8) }
   .card img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none }
   .card img.drawn { object-fit: contain; padding: 6% }
   .nav { width: 50px; height: 50px; flex: none; border-radius: 50%; border: 1px solid rgb(242 238 230 / .16); background: rgb(242 238 230 / .06); color: var(--cream); font-size: 22px; cursor: pointer;
-    box-shadow: 0 6px 14px -8px rgb(31 42 35 / .4); transition: transform .2s, background .2s }
+    box-shadow: 0 6px 14px -8px rgb(0 0 0 / .4); transition: transform .2s, background .2s; position: relative; z-index: 2 }
   .nav:hover { transform: translateY(-2px); background: rgb(242 238 230 / .14) }
-  .nav:focus-visible, .deck:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
+  .nav:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
   .nav { display: none }
   @media (hover: hover) and (pointer: fine) and (min-width: 700px) { .nav { display: block } }
   .dots { display: flex; gap: 8px }
@@ -63,17 +67,64 @@
   header img { animation: rise 1s cubic-bezier(.2,.8,.2,1) both }
   header .rule { animation: draw .9s .45s cubic-bezier(.2,.8,.2,1) both }
   #swell { animation: fade 1.6s .2s ease-out both }
-  @keyframes deck-in { from { opacity: 0; transform: translateY(28px) } }
-  .deck { animation: deck-in .9s .3s cubic-bezier(.2,.8,.2,1) both }
+  @keyframes wheel-in { from { opacity: 0; transform: translateY(28px) } }
+  .wheel { animation: wheel-in 1s .3s cubic-bezier(.2,.8,.2,1) both }
   .nav { animation: fade .8s 1.1s ease-out both }
   .dots { animation: fade .8s 1.2s ease-out both }
   footer img { animation: fade 1s 1.4s ease-out both }
   .card img { transition: opacity .6s ease-out }
   .card img.loading { opacity: 0 }
-  @media (prefers-reduced-motion: reduce) { .card, .dots i, .card img { transition: none } .stage img, header img, header .rule, .deck, .nav, .dots, footer img, #swell { animation: none } }
+  /* splash: the mark traces itself, fills in, and lifts away (once per visit; tap to skip) */
+  #splash { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 24px; cursor: pointer;
+    background: radial-gradient(55% 50% at 50% 42%, rgb(169 195 166 / .14), transparent 70%), #1A231D; transition: opacity .7s ease, visibility .7s }
+  #splash svg { width: clamp(150px, 26vw, 250px); height: auto; overflow: visible; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
+  #splash path { fill: var(--cream); fill-opacity: 0; stroke: var(--cream); stroke-width: .45; stroke-linejoin: round }
+  #splash .s-rule { width: 0; height: 3px; border-radius: 3px; background: var(--oak) }
+  #splash.go path { animation: trace 1.35s cubic-bezier(.65,0,.35,1) forwards, fill-in .55s 1.15s ease-out forwards }
+  #splash.go .s-rule { animation: rule .6s 1.25s cubic-bezier(.2,.8,.2,1) forwards }
+  #splash.out { opacity: 0; visibility: hidden } #splash.out svg { transform: scale(1.06) translateY(-8px) }
+  @keyframes trace { to { stroke-dashoffset: 0 } }
+  @keyframes fill-in { to { fill-opacity: 1; stroke-opacity: 0 } }
+  @keyframes rule { to { width: 60px } }
+  /* hold the page's own entrance until the splash lifts */
+  .splashing body > :not(#splash), .splashing body > :not(#splash) * { animation-play-state: paused !important }
+
+  /* contact: a brass drawer pull under the footer mark; pulling it slides out a felt-lined oak drawer */
+  footer { flex-direction: column; align-items: center; gap: 16px }
+  .pull { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 8px; color: var(--sage); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 10px }
+  .pull .knob { width: 74px; height: 14px; border-radius: 8px; background: linear-gradient(180deg, #E7C27D, #B8873E 60%, #8E6327); box-shadow: 0 2px 0 #6E4C1C, 0 6px 14px -6px #000, inset 0 1px 0 rgb(255 255 255 / .45); transition: transform .3s cubic-bezier(.2,.8,.2,1) }
+  .pull:hover .knob, .pull:focus-visible .knob { transform: translateY(-3px) }
+  .pull:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
+  .shade { position: fixed; inset: 0; z-index: 30; background: rgb(8 12 9 / .55); opacity: 0; transition: opacity .45s }
+  .shade.open { opacity: 1 }
+  .drawer { position: fixed; left: 50%; bottom: 0; z-index: 31; width: min(560px, 100%); transform: translate(-50%, 104%); transition: transform .65s cubic-bezier(.2,.9,.25,1);
+    border-radius: 22px 22px 0 0; overflow: hidden; box-shadow: 0 -30px 60px -20px rgb(0 0 0 / .7); padding-bottom: env(safe-area-inset-bottom) }
+  .drawer.open { transform: translate(-50%, 0) }
+  .drawer-front { position: relative; height: 66px; display: grid; place-items: center;
+    background: repeating-linear-gradient(92deg, rgb(70 40 15 / .10) 0 2px, transparent 2px 11px, rgb(255 230 190 / .06) 11px 13px, transparent 13px 23px), linear-gradient(180deg, #C9925A, #A8713C); border-bottom: 3px solid #7A4E24 }
+  .drawer-front .knob { width: 92px; height: 16px; border-radius: 9px; background: linear-gradient(180deg, #F0D08E, #BC8B40 60%, #8E6327); box-shadow: 0 2px 0 #5E3F16, inset 0 1px 0 rgb(255 255 255 / .5) }
+  .drawer-front button { all: unset; position: absolute; right: 14px; top: 50%; translate: 0 -50%; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #3B2410; font-size: 20px; background: rgb(255 255 255 / .18) }
+  .drawer-front button:focus-visible { outline: 2px solid var(--cream) }
+  .felt { background: radial-gradient(120% 100% at 50% 0%, #2C3A30, #1C2620); padding: 24px clamp(18px, 5vw, 32px) 30px; display: grid; gap: 16px; color: var(--cream) }
+  .felt h2 { margin: 0; font: 600 22px/1.2 "Segoe UI", system-ui, sans-serif; letter-spacing: .01em }
+  .felt p { margin: -8px 0 4px; color: var(--sage); font-size: 14px }
+  .ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px }
+  .way { all: unset; box-sizing: border-box; display: grid; justify-items: center; gap: 6px; padding: 14px 8px; border-radius: 14px; cursor: pointer; text-align: center;
+    background: rgb(242 238 230 / .07); border: 1px solid rgb(242 238 230 / .12); font-size: 14px; font-weight: 600; transition: background .2s, transform .2s }
+  .way:hover { background: rgb(242 238 230 / .14); transform: translateY(-2px) }
+  .way:focus-visible { outline: 2px solid var(--oak); outline-offset: 2px }
+  .way svg { width: 22px; height: 22px; stroke: var(--oak); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round }
+  .lines { display: grid; gap: 8px; font-size: 14px }
+  .line { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgb(0 0 0 / .18); min-width: 0 }
+  .line span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: all }
+  .line button { all: unset; cursor: pointer; flex: none; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--sage); padding: 4px 8px; border-radius: 6px }
+  .line button:hover { color: var(--cream) } .line button:focus-visible { outline: 2px solid var(--oak) }
+  @media (prefers-reduced-motion: reduce) { .drawer, .shade, .pull .knob { transition: none } }
+  @media (prefers-reduced-motion: reduce) { .card, .dots i, .card img { transition: none } .stage img, header img, header .rule, .wheel, .nav, .dots, footer img, #swell { animation: none } }
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><svg viewBox="0 0 100 75.83"><path d="M18.94 69.07C20.03 67.79 21.11 66.48 22.18 65.12C24.10 62.69 25.97 60.16 27.78 57.52C28.73 56.15 29.66 54.75 30.57 53.32C34.31 47.53 37.78 41.29 40.94 34.68C42.53 31.33 44.02 27.95 45.37 24.56C46.49 21.75 47.54 18.93 48.48 16.11C46.69 10.71 45.23 5.32 44.10 -0.00C43.24 3.70 42.20 7.46 40.98 11.27C38.90 17.76 36.29 24.38 33.14 30.97C29.27 39.08 24.88 46.58 20.15 53.32C19.14 54.75 18.12 56.16 17.09 57.52C15.06 60.19 12.98 62.73 10.87 65.12C9.66 66.48 8.43 67.81 7.20 69.07C4.83 71.52 2.43 73.77 0.00 75.83L75.51 75.83C73.62 73.67 71.76 71.41 69.96 69.07L18.94 69.07Z M56.52 48.59C57.42 50.20 58.32 51.77 59.25 53.32L54.01 53.32C54.87 51.77 55.71 50.19 56.52 48.59M92.80 69.07C91.56 67.81 90.33 66.48 89.13 65.12C87.01 62.73 84.93 60.19 82.91 57.52C81.87 56.16 80.85 54.75 79.85 53.32C75.11 46.58 70.72 39.08 66.85 30.97C66.41 30.04 65.98 29.12 65.56 28.19C64.37 25.57 63.26 22.94 62.24 20.33C61.37 18.11 60.56 15.90 59.81 13.70L59.81 13.69C58.60 10.14 57.00 4.64 56.63 0.00C56.20 5.28 54.03 13.26 52.29 18.34C51.80 19.75 51.30 21.16 50.77 22.57C49.80 25.16 48.77 27.74 47.65 30.33C46.76 32.41 45.82 34.48 44.84 36.55C42.03 42.44 38.96 48.05 35.67 53.32C34.80 54.75 33.90 56.14 32.99 57.52C31.24 60.14 29.44 62.68 27.60 65.12L34.75 65.12C36.50 62.66 38.20 60.12 39.85 57.52L44.94 57.52C43.35 60.11 41.71 62.66 40.02 65.12L46.94 65.12C48.56 62.65 50.12 60.11 51.63 57.52L61.85 57.52C63.51 60.13 65.23 62.66 67.01 65.12L74.20 65.12C72.33 62.68 70.51 60.15 68.74 57.52C67.82 56.14 66.90 54.75 66.02 53.32C63.79 49.78 61.66 46.09 59.64 42.26C58.55 40.19 57.49 38.08 56.46 35.93C56.41 35.83 56.37 35.73 56.32 35.63C55.56 37.39 54.75 39.14 53.93 40.88C53.69 41.37 53.45 41.87 53.21 42.36C51.38 46.12 49.44 49.78 47.41 53.32L42.42 53.32C45.12 48.74 47.67 43.97 50.03 39.02C50.29 38.48 50.54 37.94 50.80 37.40C51.89 35.05 52.93 32.69 53.90 30.31C54.43 29.05 54.93 27.79 55.42 26.52C56.19 28.38 57.00 30.23 57.85 32.08C58.24 32.95 58.65 33.82 59.06 34.68C59.74 36.12 60.45 37.54 61.17 38.94C63.74 43.98 66.50 48.79 69.42 53.32C70.33 54.75 71.26 56.15 72.21 57.52C74.03 60.16 75.90 62.69 77.81 65.12C78.88 66.48 79.96 67.79 81.06 69.07C83.08 71.45 85.15 73.71 87.25 75.83L100.00 75.83C97.57 73.77 95.16 71.52 92.80 69.07Z"/></svg><div class="s-rule"></div></div>
 <header>
   <h1 class="sr">LAA</h1>
   <img src="logo-cream.svg" alt="LAA logo" width="220" height="167">
@@ -85,13 +136,34 @@
 <main>
   <div class="row">
     <button class="nav" id="prev" aria-label="Previous photo">‹</button>
-    <div class="deck" id="deck" tabindex="0" aria-label="Photos: swipe, drag, or use the arrow keys" aria-roledescription="photo stack"></div>
+    <div class="wheel" id="wheel" tabindex="0" aria-roledescription="photo wheel"><div class="ring" id="ring"></div></div>
     <button class="nav" id="next" aria-label="Next photo">›</button>
   </div>
   <div class="dots" id="dots" aria-hidden="true"></div>
 </main>
 
-<footer><img src="logo-cream.svg" alt="" width="36" height="27"></footer>
+<footer>
+  <img src="logo-cream.svg" alt="" width="36" height="27">
+  <button class="pull" id="pull" aria-expanded="false" aria-controls="drawer"><span class="knob"></span><span>Say hello</span></button>
+</footer>
+</div>
+
+<div class="shade" id="shade" hidden></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-name" hidden>
+  <div class="drawer-front"><span class="knob"></span><button id="d-close" aria-label="Close the drawer">×</button></div>
+  <div class="felt">
+    <h2 id="d-name"></h2>
+    <p>Custom orders, questions, or just to say hi.</p>
+    <div class="ways">
+      <a class="way" id="d-call"><svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>Call</a>
+      <a class="way" id="d-text"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>Text</a>
+      <a class="way" id="d-mail"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 7 8.5-7"/></svg>Email</a>
+    </div>
+    <div class="lines">
+      <div class="line"><span id="d-phone"></span><button data-copy="phone">Copy</button></div>
+      <div class="line"><span id="d-email"></span><button data-copy="email">Copy</button></div>
+    </div>
+  </div>
 </div>
 
 <div class="stage" id="stage" hidden role="dialog" aria-modal="true" aria-label="Photo">
@@ -100,6 +172,31 @@
 </div>
 
 <script>
+// splash: trace the mark, fill it, lift away; once per visit, tap to skip, skipped for reduced motion
+const splash = document.getElementById("splash");
+let afterSplash = () => {};
+(() => {
+  let seen = false;
+  try { seen = sessionStorage.getItem("laa-splash") === "1"; sessionStorage.setItem("laa-splash", "1"); } catch {}
+  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) { splash.remove(); return; }
+  document.documentElement.classList.add("splashing");
+  document.documentElement.style.overflow = "hidden";
+  const path = splash.querySelector("path"), len = path.getTotalLength();
+  path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+  requestAnimationFrame(() => splash.classList.add("go"));
+  let ended = false;
+  const end = () => {
+    if (ended) return; ended = true;
+    splash.classList.add("out");
+    document.documentElement.classList.remove("splashing");
+    document.documentElement.style.overflow = "";
+    afterSplash();
+    setTimeout(() => splash.remove(), 800);
+  };
+  const timer = setTimeout(end, 2100);
+  splash.addEventListener("click", () => { clearTimeout(timer); end(); });
+})();
+
 // The photos. To add one: put the file in the photos folder and add a line, or swap a drawing for the real photo.
 const PHOTOS = [
   { name: "Stargazing Chair", src: "photos/stargazing-chair.png" },
@@ -111,10 +208,11 @@ const PHOTOS = [
 ];
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const deck = document.getElementById("deck"), dots = document.getElementById("dots");
-const cards = PHOTOS.map((p) => {
+const wheel = document.getElementById("wheel"), ring = document.getElementById("ring"), dots = document.getElementById("dots");
+const N = PHOTOS.length;
+const cards = PHOTOS.map((p, i) => {
   const c = document.createElement("div");
-  c.className = "card";
+  c.className = "card"; c.dataset.i = i;
   const img = document.createElement("img");
   img.className = "loading";
   img.addEventListener("load", () => img.classList.remove("loading"), { once: true });
@@ -122,79 +220,119 @@ const cards = PHOTOS.map((p) => {
   if (img.complete) img.classList.remove("loading");
   if (p.src.includes("/drawn/")) img.classList.add("drawn"); // drawings show whole; real photos fill the card
   c.appendChild(img);
-  deck.appendChild(c);
+  ring.appendChild(c);
   return c;
 });
 dots.innerHTML = PHOTOS.map(() => "<i></i>").join("");
-let order = PHOTOS.map((_, i) => i); // order[0] is the card on top
 
-// the top card sits flat; the next two peek out underneath, a little lower, smaller and tilted
-const TILT = [0, -4.5, 4];
-function layout() {
-  order.forEach((ci, depth) => {
-    const c = cards[ci];
-    c.style.zIndex = PHOTOS.length - depth;
-    c.style.opacity = depth < 3 ? 1 : 0;
-    c.style.transform = depth < 3 ? `translate(${depth * (depth === 1 ? -8 : 8)}px, ${depth * 8}px) scale(${1 - depth * 0.035}) rotate(${TILT[depth]}deg)` : "translateY(28px) scale(.9)";
-    c.setAttribute("aria-hidden", depth === 0 ? "false" : "true");
+// pos is how far round the wheel has turned, in photos (it can run past N; it wraps).
+// Every frame each card is set from its distance to pos, so the fan loops with no jumps.
+const ARC = 30;                                   // degrees between neighbouring photos
+let pos = 0, target = 0, radius = 0, raf = 0, prev = 0;
+const wrap = (d) => ((d % N) + N * 1.5) % N - N / 2; // -N/2..N/2
+const front = () => ((Math.round(target) % N) + N) % N;
+function place() { radius = cards[0].offsetWidth * 1.85; draw(); }
+function draw() {
+  cards.forEach((c, i) => {
+    const rel = wrap(i - pos), d = Math.abs(rel);
+    c.style.transform = `translateZ(${-radius}px) rotateY(${rel * ARC}deg) translateZ(${radius}px)`;
+    c.style.opacity = d < 2.6 ? Math.max(0, 1 - d * 0.3 - Math.max(0, d - 2) * 0.9).toFixed(3) : "0";
+    c.style.filter = `brightness(${(1 - Math.min(d, 2.5) * 0.2).toFixed(3)})`;
+    c.style.zIndex = 100 - Math.round(d * 10);
+    c.setAttribute("aria-hidden", i === front() ? "false" : "true");
   });
-  [...dots.children].forEach((d, i) => d.classList.toggle("on", i === order[0]));
-  deck.setAttribute("aria-label", `Photo ${order[0] + 1} of ${PHOTOS.length}: ${PHOTOS[order[0]].name}. Swipe, drag, or use the arrow keys.`);
+  [...dots.children].forEach((d, i) => d.classList.toggle("on", i === front()));
+  wheel.setAttribute("aria-label", `Photo ${front() + 1} of ${N}: ${PHOTOS[front()].name}. Drag, swipe, or use the arrow keys.`);
 }
-
-// flip to the next photo: the top card slides out to one side at an easy pace, then tucks back under the stack.
-// Left and right do the same thing, just in their own direction.
-let busy = false;
-function swipe(dir) {
-  if (busy) return;
-  busy = true;
-  const top = cards[order[0]];
-  top.classList.remove("dragging");
-  const tuck = () => {
-    order.push(order.shift()); // the top card becomes the bottom one; layout slides it in under the others
-    top.style.transition = "transform .55s cubic-bezier(.25,.8,.25,1), opacity .55s";
-    layout();
-    setTimeout(() => { top.style.transition = ""; busy = false; }, 560);
-  };
-  if (still) { order.push(order.shift()); layout(); busy = false; return; }
-  top.style.transition = "transform .45s cubic-bezier(.3,.7,.3,1)";
-  top.style.transform = `translate(${dir * deck.offsetWidth * 1.06}px, -12px) rotate(${dir * 8}deg)`;
-  setTimeout(tuck, 450);
+// ease pos toward target
+function tick(ms) {
+  const dt = prev ? Math.min(0.05, (ms - prev) / 1000) : 0.016;
+  prev = ms;
+  pos += (target - pos) * (1 - Math.exp(-dt / 0.14));
+  if (Math.abs(target - pos) < 0.0005) pos = target;
+  draw();
+  raf = pos === target || drag ? 0 : requestAnimationFrame(tick);
 }
+const go = (to) => { target = to; if (still) { pos = target; draw(); return; } if (!raf) { prev = 0; raf = requestAnimationFrame(tick); } };
+const step = (d) => go(Math.round(target) + d);
+function toCard(i) { go(Math.round(target) + Math.round(wrap(i - target))); } // the short way round
 
-// dragging the top card
+// drag to turn; let go and it settles on the nearest photo, carrying a quick flick on to the next
 let drag = null;
-deck.addEventListener("pointerdown", (e) => {
-  const top = cards[order[0]];
-  if (busy || !top.contains(e.target)) return;
-  drag = { x: e.clientX, y: e.clientY, t: performance.now(), dx: 0, dy: 0, card: top, id: e.pointerId };
-  top.classList.add("dragging");
-  top.setPointerCapture(e.pointerId);
+wheel.addEventListener("pointerdown", (e) => {
+  drag = { x: e.clientX, pos0: pos, lastX: e.clientX, lastT: performance.now(), v: 0, id: e.pointerId, card: e.target.closest(".card"), moved: false };
+  wheel.setPointerCapture(e.pointerId);
 });
-deck.addEventListener("pointermove", (e) => {
+wheel.addEventListener("pointermove", (e) => {
   if (!drag || e.pointerId !== drag.id) return;
-  drag.dx = e.clientX - drag.x; drag.dy = e.clientY - drag.y;
-  drag.card.style.transform = `translate(${drag.dx}px, ${drag.dy * 0.4}px) rotate(${drag.dx * 0.06}deg)`;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; wheel.classList.add("dragging"); cancelAnimationFrame(raf); raf = 0; }
+  if (!drag.moved) return;
+  const now = performance.now();
+  drag.v = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT);
+  drag.lastX = e.clientX; drag.lastT = now;
+  pos = target = drag.pos0 - dx / (cards[0].offsetWidth * 0.95);
+  draw();
 });
 function release(e) {
   if (!drag || e.pointerId !== drag.id) return;
-  const { dx, dy, card, t } = drag;
-  drag = null;
-  const speed = Math.abs(dx) / Math.max(1, performance.now() - t);
-  if (Math.abs(dx) > 110 || (Math.abs(dx) > 40 && speed > 0.6)) return swipe(Math.sign(dx));
-  card.classList.remove("dragging");
-  layout(); // spring back
-  if (Math.abs(dx) < 6 && Math.abs(dy) < 6 && e.type === "pointerup") view(order[0]);
+  const d = drag; drag = null;
+  wheel.classList.remove("dragging");
+  if (d.moved) {
+    const flick = Math.abs(d.v) > 0.45 ? -Math.sign(d.v) * 0.6 : 0;
+    go(Math.round(pos + flick));
+  } else if (e.type === "pointerup" && d.card) {
+    const i = +d.card.dataset.i;
+    if (i === front()) view(i); else toCard(i);
+  }
 }
-deck.addEventListener("pointerup", release);
-deck.addEventListener("pointercancel", release);
-document.getElementById("next").onclick = () => swipe(1);
-document.getElementById("prev").onclick = () => swipe(-1);
-deck.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") { e.preventDefault(); swipe(1); }
-  if (e.key === "ArrowLeft") { e.preventDefault(); swipe(-1); }
-  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); view(order[0]); }
+wheel.addEventListener("pointerup", release);
+wheel.addEventListener("pointercancel", release);
+document.getElementById("next").onclick = () => step(1);
+document.getElementById("prev").onclick = () => step(-1);
+wheel.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); view(front()); }
 });
+new ResizeObserver(place).observe(wheel);
+
+// the contact drawer
+(() => {
+  const who = ["Lucas", "Amaniera"].join(" ");
+  const digits = ["732", "221", "8410"], phone = "+1" + digits.join("");
+  const email = ["lucas.amaniera71", "gmail.com"].join("@");
+  const $ = (id) => document.getElementById(id);
+  $("d-name").textContent = who;
+  $("d-phone").textContent = `(${digits[0]}) ${digits[1]}-${digits[2]}`;
+  $("d-email").textContent = email;
+  $("d-call").href = "tel:" + phone;
+  $("d-text").href = "sms:" + phone;
+  $("d-mail").href = "mailto:" + email + "?subject=" + encodeURIComponent("Hello from your LAA site");
+  const drawer = $("drawer"), shade = $("shade"), pull = $("pull");
+  const open = () => {
+    drawer.hidden = shade.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => { drawer.classList.add("open"); shade.classList.add("open"); }));
+    pull.setAttribute("aria-expanded", "true");
+    setTimeout(() => $("d-close").focus(), 300);
+  };
+  const close = () => {
+    drawer.classList.remove("open"); shade.classList.remove("open");
+    pull.setAttribute("aria-expanded", "false");
+    setTimeout(() => { drawer.hidden = shade.hidden = true; pull.focus(); }, still ? 0 : 650);
+  };
+  pull.onclick = open;
+  $("d-close").onclick = close;
+  shade.onclick = close;
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) close(); });
+  drawer.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-copy]"); if (!b) return;
+    const text = b.dataset.copy === "phone" ? $("d-phone").textContent : email;
+    try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; }
+    catch { getSelection().selectAllChildren(b.previousElementSibling); b.textContent = "Selected"; }
+    setTimeout(() => (b.textContent = "Copy"), 1600);
+  });
+})();
 
 // tap: see the photo full screen
 const stage = document.getElementById("stage"), big = document.getElementById("s-img");
@@ -203,7 +341,7 @@ function view(i) {
   stage.hidden = false; document.body.style.overflow = "hidden";
   document.getElementById("s-close").focus();
 }
-function closeView() { stage.hidden = true; document.body.style.overflow = ""; deck.focus(); }
+function closeView() { stage.hidden = true; document.body.style.overflow = ""; wheel.focus(); }
 document.getElementById("s-close").onclick = closeView;
 stage.addEventListener("click", (e) => { if (e.target === stage) closeView(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.hidden) closeView(); });
@@ -242,14 +380,10 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.h
   size(); frame(0); start();
 })();
 
-layout();
-if (!still) {
-  // start squared up on top of each other, then fan out once the stack has faded in
-  order.forEach((ci) => { cards[ci].style.transition = "none"; cards[ci].style.transform = "none"; });
-  deck.offsetHeight;
-  cards.forEach((c) => (c.style.transition = ""));
-  setTimeout(layout, 1050);
-}
+place();
+// arrival: the fan sweeps round to the first photo (called once the splash has lifted)
+function arrive() { if (still) return; pos = -2.5; target = 0; draw(); prev = 0; raf = requestAnimationFrame(tick); }
+if (document.getElementById("splash")) { if (!still) { pos = -2.5; draw(); } afterSplash = () => setTimeout(arrive, 250); } else arrive();
 </script>
 </body>
 </html>
