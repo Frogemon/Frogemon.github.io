@@ -74,7 +74,7 @@
   footer img { animation: fade 1s 1.4s ease-out both }
   .card img { transition: opacity .6s ease-out }
   .card img.loading { opacity: 0 }
-  /* splash: the mark traces itself, fills in, and lifts away (once per visit; tap to skip) */
+  /* splash: the mark traces itself, fills in, and lifts away (every load; tap to skip; a plain fade when motion is reduced) */
   #splash { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 24px; cursor: pointer;
     background: radial-gradient(55% 50% at 50% 42%, rgb(169 195 166 / .14), transparent 70%), #1A231D; transition: opacity .7s ease, visibility .7s }
   #splash svg { width: clamp(150px, 26vw, 250px); height: auto; overflow: visible; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
@@ -83,30 +83,34 @@
   #splash.go path { animation: trace 1.35s cubic-bezier(.65,0,.35,1) forwards, fill-in .55s 1.15s ease-out forwards }
   #splash.go .s-rule { animation: rule .6s 1.25s cubic-bezier(.2,.8,.2,1) forwards }
   #splash.out { opacity: 0; visibility: hidden } #splash.out svg { transform: scale(1.06) translateY(-8px) }
+  #splash.calm path { fill-opacity: 1; stroke: none } #splash.calm .s-rule { width: 60px }
+  #splash.calm svg, #splash.calm .s-rule { opacity: 0; transition: opacity .6s ease } #splash.calm.go svg, #splash.calm.go .s-rule { opacity: 1 }
+  #splash.calm.go path, #splash.calm.go .s-rule { animation: none }
   @keyframes trace { to { stroke-dashoffset: 0 } }
   @keyframes fill-in { to { fill-opacity: 1; stroke-opacity: 0 } }
   @keyframes rule { to { width: 60px } }
   /* hold the page's own entrance until the splash lifts */
   .splashing body > :not(#splash), .splashing body > :not(#splash) * { animation-play-state: paused !important }
 
-  /* contact: a brass drawer pull under the footer mark; pulling it slides out a felt-lined oak drawer */
+  /* contact: a slim pull under the footer mark slides up a sheet in the same green as the page */
   footer { flex-direction: column; align-items: center; gap: 16px }
   .pull { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 8px; color: var(--sage); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 10px }
-  .pull .knob { width: 74px; height: 14px; border-radius: 8px; background: linear-gradient(180deg, #E7C27D, #B8873E 60%, #8E6327); box-shadow: 0 2px 0 #6E4C1C, 0 6px 14px -6px #000, inset 0 1px 0 rgb(255 255 255 / .45); transition: transform .3s cubic-bezier(.2,.8,.2,1) }
-  .pull:hover .knob, .pull:focus-visible .knob { transform: translateY(-3px) }
+  .pull .knob { width: 44px; height: 3px; border-radius: 3px; background: var(--oak); transition: width .3s cubic-bezier(.2,.8,.2,1) }
+  .pull:hover .knob, .pull:focus-visible .knob { width: 64px }
   .pull:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
   .shade { position: fixed; inset: 0; z-index: 30; background: rgb(8 12 9 / .55); opacity: 0; transition: opacity .45s }
   .shade.open { opacity: 1 }
-  .drawer { position: fixed; left: 50%; bottom: 0; z-index: 31; width: min(560px, 100%); transform: translate(-50%, 104%); transition: transform .65s cubic-bezier(.2,.9,.25,1);
-    border-radius: 22px 22px 0 0; overflow: hidden; box-shadow: 0 -30px 60px -20px rgb(0 0 0 / .7); padding-bottom: env(safe-area-inset-bottom) }
+  .drawer { position: fixed; left: 50%; bottom: 0; z-index: 31; width: min(520px, 100%); transform: translate(-50%, 104%); transition: transform .6s cubic-bezier(.2,.9,.25,1);
+    border-radius: 24px 24px 0 0; overflow: hidden; background: linear-gradient(180deg, #24302A, #1A231D); border: 1px solid rgb(242 238 230 / .1); border-bottom: 0;
+    box-shadow: 0 -30px 60px -20px rgb(0 0 0 / .7); padding-bottom: env(safe-area-inset-bottom) }
   .drawer.open { transform: translate(-50%, 0) }
-  .drawer-front { position: relative; height: 66px; display: grid; place-items: center;
-    background: repeating-linear-gradient(92deg, rgb(70 40 15 / .10) 0 2px, transparent 2px 11px, rgb(255 230 190 / .06) 11px 13px, transparent 13px 23px), linear-gradient(180deg, #C9925A, #A8713C); border-bottom: 3px solid #7A4E24 }
-  .drawer-front .knob { width: 92px; height: 16px; border-radius: 9px; background: linear-gradient(180deg, #F0D08E, #BC8B40 60%, #8E6327); box-shadow: 0 2px 0 #5E3F16, inset 0 1px 0 rgb(255 255 255 / .5) }
-  .drawer-front button { all: unset; position: absolute; right: 14px; top: 50%; translate: 0 -50%; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #3B2410; font-size: 20px; background: rgb(255 255 255 / .18) }
+  .drawer-front { position: relative; height: 34px; display: grid; place-items: center }
+  .drawer-front .knob { width: 44px; height: 4px; border-radius: 4px; background: rgb(242 238 230 / .25) }
+  .drawer-front button { all: unset; position: absolute; right: 14px; top: 50%; translate: 0 -50%; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--cream); font-size: 20px; background: rgb(242 238 230 / .08); top: 26px }
   .drawer-front button:focus-visible { outline: 2px solid var(--cream) }
-  .felt { background: radial-gradient(120% 100% at 50% 0%, #2C3A30, #1C2620); padding: 24px clamp(18px, 5vw, 32px) 30px; display: grid; gap: 16px; color: var(--cream) }
+  .felt { padding: 10px clamp(18px, 5vw, 32px) 30px; display: grid; gap: 16px; color: var(--cream) }
   .felt h2 { margin: 0; font: 600 22px/1.2 "Segoe UI", system-ui, sans-serif; letter-spacing: .01em }
+  .felt h2::after { content: ""; display: block; width: 40px; height: 3px; border-radius: 3px; background: var(--oak); margin-top: 12px }
   .felt p { margin: -8px 0 4px; color: var(--sage); font-size: 14px }
   .ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px }
   .way { all: unset; box-sizing: border-box; display: grid; justify-items: center; gap: 6px; padding: 14px 8px; border-radius: 14px; cursor: pointer; text-align: center;
@@ -176,13 +180,12 @@
 const splash = document.getElementById("splash");
 let afterSplash = () => {};
 (() => {
-  let seen = false;
-  try { seen = sessionStorage.getItem("laa-splash") === "1"; sessionStorage.setItem("laa-splash", "1"); } catch {}
-  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) { splash.remove(); return; }
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (calm) splash.classList.add("calm");
   document.documentElement.classList.add("splashing");
   document.documentElement.style.overflow = "hidden";
   const path = splash.querySelector("path"), len = path.getTotalLength();
-  path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+  if (!calm) { path.style.strokeDasharray = len; path.style.strokeDashoffset = len; }
   requestAnimationFrame(() => splash.classList.add("go"));
   let ended = false;
   const end = () => {
@@ -193,7 +196,7 @@ let afterSplash = () => {};
     afterSplash();
     setTimeout(() => splash.remove(), 800);
   };
-  const timer = setTimeout(end, 2100);
+  const timer = setTimeout(end, calm ? 1500 : 2100);
   splash.addEventListener("click", () => { clearTimeout(timer); end(); });
 })();
 
