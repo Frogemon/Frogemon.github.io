@@ -36,6 +36,10 @@
   .frame:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
   .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
   .frame:hover img { transform: scale(1.05) }
+  .frame.soon { cursor: default; display: grid; place-items: center; align-content: center; gap: 12px; transform: none;
+    background: linear-gradient(160deg, #22302A, var(--forest) 60%); border: 1px dashed rgb(242 238 230 / .16); box-shadow: none }
+  .frame.soon img { width: 64px; height: auto; object-fit: contain; opacity: .35 }
+  .frame.soon .soon-text { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--sage); opacity: .8 }
   .frame .tag { position: absolute; left: 14px; bottom: 14px; padding: 7px 12px; border-radius: 99px; background: rgb(20 26 22 / .72); backdrop-filter: blur(6px);
     font: 600 15px/1 var(--display); letter-spacing: .01em }
 
@@ -85,26 +89,41 @@
 </dialog>
 
 <script>
-// The gallery. The first photo is the big one at the top. To add a picture: put the file in the photos folder and add a line here.
+// The gallery. The first entry is the big one at the top. To add a picture: put the file in the photos folder
+// and fill in its photo: "photos/your-file.jpg". Entries with photo: "" show as "Photo coming soon".
 const PHOTOS = [
   { name: "Stargazing Chair", photo: "photos/stargazing-chair.png" },
+  { name: "Wine & Glass Caddy", photo: "" },
+  { name: "Wine Bottle Wind Chimes", photo: "" },
+  { name: "Magic Wine Holder", photo: "" },
+  { name: "Folding Stool", photo: "" },
+  { name: "Beer Flight", photo: "" },
 ];
+const SHOTS = PHOTOS.filter((p) => p.photo); // only real photos open in the viewer
 
 const viewer = document.getElementById("viewer");
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let at = 0;
 
 function show(i) {
-  at = (i + PHOTOS.length) % PHOTOS.length;
-  const p = PHOTOS[at], big = document.getElementById("big");
+  at = (i + SHOTS.length) % SHOTS.length;
+  const p = SHOTS[at], big = document.getElementById("big");
   big.src = p.photo; big.alt = p.name;
   document.getElementById("caption").textContent = p.name;
-  document.getElementById("pos").textContent = PHOTOS.length > 1 ? `${at + 1} / ${PHOTOS.length}` : "";
-  for (const id of ["prev", "next"]) document.getElementById(id).hidden = PHOTOS.length < 2;
+  document.getElementById("pos").textContent = SHOTS.length > 1 ? `${at + 1} / ${SHOTS.length}` : "";
+  for (const id of ["prev", "next"]) document.getElementById(id).hidden = SHOTS.length < 2;
   if (!viewer.open) viewer.showModal();
 }
 
-function frame(p, i) {
+function frame(p) {
+  if (!p.photo) {
+    const box = document.createElement("div");
+    box.className = "frame soon";
+    box.innerHTML = `<img src="logo.svg" alt="" width="64" height="49"><span class="soon-text">Photo coming soon</span><span class="tag"></span>`;
+    box.querySelector(".tag").textContent = p.name;
+    return box;
+  }
+  const i = SHOTS.indexOf(p);
   const btn = document.createElement("button");
   btn.type = "button"; btn.className = "frame";
   btn.setAttribute("aria-label", "Open photo: " + p.name);
@@ -125,10 +144,10 @@ function frame(p, i) {
   return btn;
 }
 
-if (PHOTOS.length) document.getElementById("feature").appendChild(frame(PHOTOS[0], 0));
+if (PHOTOS.length) document.getElementById("feature").appendChild(frame(PHOTOS[0]));
 if (PHOTOS.length > 1) {
   document.getElementById("more").hidden = false;
-  PHOTOS.slice(1).forEach((p, j) => document.getElementById("grid").appendChild(frame(p, j + 1)));
+  PHOTOS.slice(1).forEach((p) => document.getElementById("grid").appendChild(frame(p)));
 }
 document.getElementById("close").onclick = () => viewer.close();
 document.getElementById("prev").onclick = () => show(at - 1);
