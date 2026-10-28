@@ -5,92 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LAA · Handmade Woodwork</title>
 <meta name="description" content="LAA: a gallery of handmade wood pieces.">
-<meta name="theme-color" content="#141A16">
+<meta name="theme-color" content="#F4F2ED">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://api.fontshare.com">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500,700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap">
 <style>
-  /* palette: forest-night ground, brand green, cream, oiled-oak accent */
-  :root {
-    --night: #141A16; --forest: #1D2620; --sage: #9DB29C; --cream: #F2EEE6; --dim: #AEB8AD; --oak: #C98B4E; --line: rgb(242 238 230 / .12);
-    --display: "Clash Display", "Segoe UI", system-ui, sans-serif;
-    --body: "Satoshi", "Segoe UI", system-ui, sans-serif;
-  }
+  /* minimal catalogue: paper ground, ink type, one green accent; dark mode follows the phone */
+  :root { --paper: #F4F2ED; --tile: #E9E6DF; --ink: #161A17; --muted: #7A7F79; --line: #D9D5CC; --accent: #2E3B32;
+    --font: "General Sans", "Segoe UI", system-ui, sans-serif; color-scheme: light }
+  @media (prefers-color-scheme: dark) { :root { --paper: #121513; --tile: #1B201C; --ink: #ECE8E0; --muted: #8C938B; --line: #2A302B; --accent: #A9C3A6; color-scheme: dark } }
   * { box-sizing: border-box }
-  body { margin: 0; background: var(--night); color: var(--cream); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased }
-  .wrap { max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
+  .num { font-variant-numeric: tabular-nums; color: var(--muted) }
 
-  /* hero: name on the left, the featured piece large on the right; stacks on phones */
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding-block: clamp(36px, 7vw, 84px) 56px }
-  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding-top: 32px } }
-  .brand { display: flex; align-items: center; gap: 18px }
-  .brand img { width: clamp(64px, 9vw, 92px); height: auto; aspect-ratio: 100 / 75.83 }
-  .hero h1 { font: 600 clamp(56px, 9vw, 104px)/1 var(--display); letter-spacing: .02em; margin: 0 }
-  .hero p { margin: 22px 0 0; max-width: 32ch; color: var(--dim); font-size: clamp(17px, 1.8vw, 20px) }
-  .rule { width: 56px; height: 2px; background: var(--oak); margin-top: 26px; border-radius: 2px }
+  /* top bar */
+  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(10px) }
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; border-bottom: 1px solid var(--line) }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: .08em; text-decoration: none; color: inherit }
+  .brand img { width: 30px; height: auto; aspect-ratio: 100 / 75.83 }
+  nav .count { font-size: 13px }
 
-  /* every photo sits in a fixed-shape frame, so nothing collapses while it loads */
-  .frame { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; position: relative; cursor: zoom-in;
-    background: var(--forest); box-shadow: 0 30px 60px -30px rgb(0 0 0 / .8), 0 0 0 1px var(--line);
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .45s cubic-bezier(.2,.8,.2,1) }
-  .frame:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
-  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
-  .frame:hover img { transform: scale(1.05) }
-  .frame.soon { cursor: default; display: grid; place-items: center; align-content: center; gap: 12px; transform: none;
-    background: linear-gradient(160deg, #22302A, var(--forest) 60%); border: 1px dashed rgb(242 238 230 / .16); box-shadow: none }
-  .frame.soon img { width: 64px; height: auto; object-fit: contain; opacity: .35 }
-  .frame.soon .soon-text { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--sage); opacity: .8 }
-  .frame .tag { position: absolute; left: 14px; bottom: 14px; padding: 7px 12px; border-radius: 99px; background: rgb(20 26 22 / .72); backdrop-filter: blur(6px);
-    font: 600 15px/1 var(--display); letter-spacing: .01em }
+  /* intro: the name, large and quiet */
+  .intro { padding-block: clamp(48px, 10vw, 120px) clamp(28px, 5vw, 56px) }
+  .intro h1 { margin: 0; font-weight: 500; font-size: clamp(56px, 13vw, 168px); line-height: .9; letter-spacing: .01em }
+  .intro .meta { display: flex; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted) }
 
-  /* more pieces, once there are several photos */
-  .gallery { padding-block: 8px 72px }
-  .gallery h2 { font: 600 clamp(26px, 3.4vw, 34px)/1 var(--display); letter-spacing: .01em; margin: 0 0 22px; padding-top: 26px; border-top: 1px solid var(--line) }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 20px }
+  /* the work: a numbered index of pieces */
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 36px) clamp(14px, 2vw, 24px); padding-bottom: 96px }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+  @media (max-width: 540px) { .grid { grid-template-columns: 1fr } }
+  .piece { margin: 0; display: grid; gap: 10px }
+  .piece.lead { grid-column: span 2; grid-row: span 2 }
+  @media (max-width: 540px) { .piece.lead { grid-column: auto; grid-row: auto } }
+  .shot { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; background: var(--tile); overflow: hidden; border-radius: 4px; cursor: zoom-in; position: relative }
+  .piece.lead .shot { aspect-ratio: auto; height: 100% ; min-height: 320px }
+  @media (max-width: 540px) { .piece.lead .shot { aspect-ratio: 4 / 5; height: auto } }
+  .shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
+  .shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .9s cubic-bezier(.2,.7,.2,1), opacity .6s }
+  .shot:hover img { transform: scale(1.03) }
+  .shot.soon { cursor: default; display: grid; place-items: center }
+  .shot.soon img { width: 44px; height: auto; object-fit: contain; opacity: .18; filter: grayscale(1) }
+  @media (prefers-color-scheme: dark) { .shot.soon img { filter: grayscale(1) invert(1) } }
+  .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px }
+  .cap span:first-child { display: flex; gap: 12px }
+  .cap .tagline { color: var(--muted); font-size: 13px }
 
-  footer { border-top: 1px solid var(--line); padding-block: 24px 36px; color: var(--dim); font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap }
-  footer img { width: 30px; height: auto; aspect-ratio: 100 / 75.83; vertical-align: middle; margin-right: 10px; opacity: .8 }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-block: 22px 36px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted) }
 
-  /* lightbox */
-  dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1100px); overflow: visible }
-  dialog::backdrop { background: rgb(8 11 9 / .8); backdrop-filter: blur(14px) }
-  dialog img { display: block; max-width: 100%; max-height: 82svh; border-radius: 16px }
-  dialog p { margin: 14px 4px 0; font: 600 20px var(--display); display: flex; justify-content: space-between; gap: 12px }
-  dialog p small { font: 500 13px var(--body); color: var(--dim) }
-  .dlg-btn { position: absolute; top: 10px; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgb(20 26 22 / .75); color: var(--cream); font-size: 20px; cursor: pointer }
-  .dlg-btn:focus-visible { outline: 2px solid var(--oak) }
+  /* viewer */
+  dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1100px); overflow: visible; color: #ECE8E0 }
+  dialog::backdrop { background: rgb(12 14 13 / .9) }
+  dialog img { display: block; max-width: 100%; max-height: 84svh; border-radius: 4px }
+  dialog p { margin: 12px 2px 0; display: flex; justify-content: space-between; font-size: 14px }
+  .dlg-btn { position: absolute; top: 10px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgb(18 21 19 / .7); color: #ECE8E0; font: 18px var(--font); cursor: pointer }
+  .dlg-btn:focus-visible { outline: 2px solid #A9C3A6 }
   #close { right: 10px } #prev { left: 10px; top: 50% } #next { right: 10px; top: 50% }
   [hidden] { display: none !important }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important } .frame { transform: none !important } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 </style>
 </head>
 <body>
-<section class="hero wrap">
-  <div>
-    <div class="brand"><img src="logo.svg" alt="LAA logo" width="92" height="70"><h1>LAA</h1></div>
-    <div class="rule"></div>
-  </div>
-  <div id="feature"></div>
-</section>
+<nav><div class="wrap">
+  <a class="brand" href="#"><img src="logo.svg" alt="" width="30" height="23">LAA</a>
+  <span class="count num" id="count"></span>
+</div></nav>
 
-<section class="gallery wrap" id="more" hidden>
-  <h2>More pieces</h2>
-  <div class="grid" id="grid"></div>
-</section>
+<header class="intro wrap">
+  <h1>LAA</h1>
+  <div class="meta"><span>Handmade woodwork</span><span class="num" id="year"></span></div>
+</header>
 
-<footer class="wrap"><span><img src="logo.svg" alt="" width="30" height="23">© LAA</span><span>Handmade woodwork</span></footer>
+<main class="wrap"><div class="grid" id="grid"></div></main>
+
+<footer><div class="wrap"><span>© LAA</span><span>frogemon.github.io</span></div></footer>
 
 <dialog id="viewer" aria-label="Photo">
   <button class="dlg-btn" id="close" aria-label="Close">×</button>
   <button class="dlg-btn" id="prev" aria-label="Previous photo">‹</button>
   <button class="dlg-btn" id="next" aria-label="Next photo">›</button>
   <img id="big" alt="">
-  <p><span id="caption"></span><small id="pos"></small></p>
+  <p><span id="caption"></span><span class="num" id="pos"></span></p>
 </dialog>
 
 <script>
-// The gallery. The first entry is the big one at the top. To add a picture: put the file in the photos folder
-// and fill in its photo: "photos/your-file.jpg". Entries with photo: "" show as "Photo coming soon".
+// The gallery. The first entry is the big one. To add a picture: put the file in the photos folder
+// and fill in its photo: "photos/your-file.jpg". Entries with photo: "" show as "Photo soon".
 const PHOTOS = [
   { name: "Stargazing Chair", photo: "photos/stargazing-chair.png" },
   { name: "Wine & Glass Caddy", photo: "" },
@@ -101,8 +101,10 @@ const PHOTOS = [
 ];
 const SHOTS = PHOTOS.filter((p) => p.photo); // only real photos open in the viewer
 
-const viewer = document.getElementById("viewer");
-const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const viewer = document.getElementById("viewer"), grid = document.getElementById("grid");
+const pad = (n) => String(n).padStart(2, "0");
+document.getElementById("count").textContent = `${pad(PHOTOS.length)} pieces`;
+document.getElementById("year").textContent = new Date().getFullYear();
 let at = 0;
 
 function show(i) {
@@ -110,45 +112,36 @@ function show(i) {
   const p = SHOTS[at], big = document.getElementById("big");
   big.src = p.photo; big.alt = p.name;
   document.getElementById("caption").textContent = p.name;
-  document.getElementById("pos").textContent = SHOTS.length > 1 ? `${at + 1} / ${SHOTS.length}` : "";
+  document.getElementById("pos").textContent = SHOTS.length > 1 ? `${pad(at + 1)} / ${pad(SHOTS.length)}` : "";
   for (const id of ["prev", "next"]) document.getElementById(id).hidden = SHOTS.length < 2;
   if (!viewer.open) viewer.showModal();
 }
 
-function frame(p) {
-  if (!p.photo) {
-    const box = document.createElement("div");
-    box.className = "frame soon";
-    box.innerHTML = `<img src="logo.svg" alt="" width="64" height="49"><span class="soon-text">Photo coming soon</span><span class="tag"></span>`;
-    box.querySelector(".tag").textContent = p.name;
-    return box;
+PHOTOS.forEach((p, i) => {
+  const fig = document.createElement("figure");
+  fig.className = "piece" + (i === 0 ? " lead" : "");
+  const shot = document.createElement(p.photo ? "button" : "div");
+  shot.className = "shot" + (p.photo ? "" : " soon");
+  const img = document.createElement("img");
+  if (p.photo) {
+    shot.type = "button";
+    shot.setAttribute("aria-label", "Open photo: " + p.name);
+    img.src = p.photo; img.alt = p.name; img.loading = i === 0 ? "eager" : "lazy";
+    shot.addEventListener("click", () => show(SHOTS.indexOf(p)));
+  } else {
+    img.src = "logo.svg"; img.alt = "";
   }
-  const i = SHOTS.indexOf(p);
-  const btn = document.createElement("button");
-  btn.type = "button"; btn.className = "frame";
-  btn.setAttribute("aria-label", "Open photo: " + p.name);
-  btn.innerHTML = `<img alt=""><span class="tag"></span>`;
-  btn.querySelector("img").src = p.photo;
-  btn.querySelector("img").alt = p.name;
-  btn.querySelector(".tag").textContent = p.name;
-  btn.addEventListener("click", () => show(i));
-  // a gentle 3D tilt toward the pointer
-  if (!still) {
-    btn.addEventListener("pointermove", (e) => {
-      const r = btn.getBoundingClientRect();
-      btn.style.setProperty("--ry", (((e.clientX - r.left) / r.width - 0.5) * 7).toFixed(2) + "deg");
-      btn.style.setProperty("--rx", (-((e.clientY - r.top) / r.height - 0.5) * 7).toFixed(2) + "deg");
-    });
-    btn.addEventListener("pointerleave", () => { btn.style.removeProperty("--rx"); btn.style.removeProperty("--ry"); });
-  }
-  return btn;
-}
+  shot.appendChild(img);
+  const cap = document.createElement("figcaption");
+  cap.className = "cap";
+  cap.innerHTML = `<span><span class="num"></span><span class="name"></span></span><span class="tagline"></span>`;
+  cap.querySelector(".num").textContent = pad(i + 1);
+  cap.querySelector(".name").textContent = p.name;
+  cap.querySelector(".tagline").textContent = p.photo ? "" : "Photo soon";
+  fig.append(shot, cap);
+  grid.appendChild(fig);
+});
 
-if (PHOTOS.length) document.getElementById("feature").appendChild(frame(PHOTOS[0]));
-if (PHOTOS.length > 1) {
-  document.getElementById("more").hidden = false;
-  PHOTOS.slice(1).forEach((p) => document.getElementById("grid").appendChild(frame(p)));
-}
 document.getElementById("close").onclick = () => viewer.close();
 document.getElementById("prev").onclick = () => show(at - 1);
 document.getElementById("next").onclick = () => show(at + 1);
