@@ -33,7 +33,7 @@
     touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab }
   .wheel.dragging { cursor: grabbing }
   .wheel:focus-visible { outline: 2px solid var(--oak); outline-offset: 6px; border-radius: 20px }
-  .ring { position: absolute; inset: 0; transform-style: preserve-3d }
+  .ring { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none }
   .card { position: absolute; left: 50%; top: 30px; width: var(--cw); aspect-ratio: 4 / 5; margin-left: calc(var(--cw) / -2); border-radius: 20px; overflow: hidden;
     background: #EDE6D8; backface-visibility: hidden; -webkit-backface-visibility: hidden;
     box-shadow: 0 2px 4px rgb(0 0 0 / .2), 0 30px 60px -26px rgb(0 0 0 / .8) }
@@ -265,7 +265,7 @@ function toCard(i) { go(Math.round(target) + Math.round(wrap(i - target))); } //
 // drag to turn; let go and it settles on the nearest photo, carrying a quick flick on to the next
 let drag = null;
 wheel.addEventListener("pointerdown", (e) => {
-  drag = { x: e.clientX, pos0: pos, lastX: e.clientX, lastT: performance.now(), v: 0, id: e.pointerId, card: e.target.closest(".card"), moved: false };
+  drag = { x: e.clientX, pos0: pos, lastX: e.clientX, lastT: performance.now(), v: 0, id: e.pointerId, moved: false };
   wheel.setPointerCapture(e.pointerId);
 });
 wheel.addEventListener("pointermove", (e) => {
@@ -286,9 +286,11 @@ function release(e) {
   if (d.moved) {
     const flick = Math.abs(d.v) > 0.45 ? -Math.sign(d.v) * 0.6 : 0;
     go(Math.round(pos + flick));
-  } else if (e.type === "pointerup" && d.card) {
-    const i = +d.card.dataset.i;
-    if (i === front()) view(i); else toCard(i);
+  } else if (e.type === "pointerup") {
+    // decide by where the tap landed: 3D hit-testing on phones often reports the ring, not the card
+    const f = cards[front()].getBoundingClientRect();
+    if (e.clientX >= f.left && e.clientX <= f.right && e.clientY >= f.top && e.clientY <= f.bottom) view(front());
+    else step(e.clientX < f.left ? -1 : 1);
   }
 }
 wheel.addEventListener("pointerup", release);
@@ -404,10 +406,10 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.h
   document.addEventListener("visibilitychange", run);
   wheel.addEventListener("pointermove", (e) => {
     if (e.pointerType !== "mouse") return;
-    const b = wheel.getBoundingClientRect(), c = e.target.closest(".card");
+    const b = wheel.getBoundingClientRect(), f = cards[front()].getBoundingClientRect();
     aimX = ((e.clientX - b.left) / b.width - 0.5) * 6;
     aimY = -((e.clientY - b.top) / b.height - 0.5) * 5;
-    hoverI = c ? +c.dataset.i : -1;
+    hoverI = e.clientX >= f.left && e.clientX <= f.right && e.clientY >= f.top && e.clientY <= f.bottom ? front() : -1;
   });
   wheel.addEventListener("pointerleave", () => { aimX = aimY = 0; hoverI = -1; });
   run();
