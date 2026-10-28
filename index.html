@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#1F2A23">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
-  /* forest-green band for the mark, then a workbench of prints on cream */
+  /* forest-green band for the mark, then the photos packed on cream */
   :root { --forest: #1F2A23; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #EFE9DE; --print: #FCFAF5; --oak: #B97A3E; color-scheme: light }
   * { box-sizing: border-box }
   html, body { margin: 0 }
@@ -20,30 +20,34 @@
   header img { width: clamp(140px, 20vw, 220px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 16px 30px rgb(0 0 0 / .4)) }
   header .rule { width: 60px; height: 3px; border-radius: 3px; background: var(--oak) }
 
-  /* the bench: prints laid out loosely, each tilted and nudged a little off its spot */
-  .bench { max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) max(22px, env(safe-area-inset-left)) clamp(70px, 9vw, 120px);
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(26px, 4vw, 54px) clamp(18px, 3vw, 40px) }
-  @media (max-width: 860px) { .bench { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-  .print { all: unset; box-sizing: border-box; display: block; cursor: zoom-in; position: relative;
-    background: var(--print); padding: 10px 10px 34px; border-radius: 3px;
-    box-shadow: 0 1px 1px rgb(31 42 35 / .08), 0 10px 24px -10px rgb(31 42 35 / .45), 0 30px 50px -34px rgb(31 42 35 / .5);
-    transform: translate(var(--dx), var(--dy)) rotate(var(--r)); transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s }
-  .print img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #E7E0D2 }
-  .print:hover, .print:focus-visible { transform: translate(var(--dx), calc(var(--dy) - 8px)) rotate(0deg) scale(1.03); z-index: 2;
-    box-shadow: 0 2px 2px rgb(31 42 35 / .08), 0 22px 40px -14px rgb(31 42 35 / .5), 0 44px 70px -40px rgb(31 42 35 / .55) }
-  .print:focus-visible { outline: 2px solid var(--oak); outline-offset: 6px }
-  /* a strip of tape on some prints */
-  .print.taped::before { content: ""; position: absolute; top: -12px; left: 50%; width: 76px; height: 24px; transform: translateX(-50%) rotate(calc(var(--r) * -1.6));
-    background: rgb(233 222 196 / .82); box-shadow: 0 1px 2px rgb(0 0 0 / .08) }
+  /* the mosaic: photos packed edge to edge in mixed sizes, thin gaps, no frames */
+  .mosaic { max-width: 1240px; margin: 0 auto; padding: clamp(10px, 2vw, 22px) max(10px, env(safe-area-inset-left)) clamp(50px, 7vw, 90px);
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(170px, 24vw, 320px); grid-auto-flow: dense; gap: clamp(5px, .8vw, 10px) }
+  .tile { all: unset; box-sizing: border-box; display: block; position: relative; overflow: hidden; cursor: zoom-in; background: #EDE6D8; border-radius: 4px }
+  .tile.big { grid-column: span 2; grid-row: span 2 }
+  /* second half of each run of six mirrors the first: two small on the left, the big one on the right */
+  .tile:nth-child(6n + 4), .tile:nth-child(6n + 5) { grid-column: 1 }
+  .tile:nth-child(6n + 6) { grid-column: 2 / span 2 }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1s cubic-bezier(.2,.8,.2,1), filter .5s }
+  .tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 60%, rgb(18 24 20 / .18)); opacity: 0; transition: opacity .5s }
+  .tile img.drawn { object-fit: contain; padding: 4% }
+  .tile:hover img, .tile:focus-visible img { transform: scale(1.045) }
+  .tile:hover::after { opacity: 1 }
+  .tile:focus-visible { outline: 2px solid var(--oak); outline-offset: 2px }
+  @media (max-width: 640px) {
+    .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 46vw }
+    .tile.big, .tile:nth-child(6n + 6) { grid-column: span 2; grid-row: span 2 }
+    .tile:nth-child(6n + 4), .tile:nth-child(6n + 5) { grid-column: auto }
+  }
 
   footer { display: flex; justify-content: center; padding: 0 20px 40px }
   footer img { width: 36px; height: auto; aspect-ratio: 100 / 75.83; opacity: .55 }
 
-  /* viewer: the picked print flies up to fill the screen */
+  /* viewer: the picked photo grows from its tile to fill the screen */
   .stage { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgb(18 24 20 / 0); transition: background .4s; touch-action: pan-y }
   .stage.open { background: rgb(18 24 20 / .9) }
   .stage[hidden] { display: none }
-  .stage img { max-width: min(92vw, 1100px); max-height: 86svh; border-radius: 6px; box-shadow: 0 40px 90px -30px #000; background: var(--print); padding: 8px }
+  .stage img { max-width: min(92vw, 1100px); max-height: 86svh; border-radius: 6px; box-shadow: 0 40px 90px -30px #000 }
   .stage button { position: fixed; width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgb(242 238 230 / .14); color: var(--cream); font-size: 22px; cursor: pointer; opacity: 0; transition: opacity .3s, background .2s }
   .stage.open button { opacity: 1 }
   .stage button:hover { background: rgb(242 238 230 / .26) }
@@ -51,7 +55,7 @@
   #s-close { top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)) }
   #s-prev { left: max(14px, env(safe-area-inset-left)); top: 50% }
   #s-next { right: max(14px, env(safe-area-inset-right)); top: 50% }
-  @media (prefers-reduced-motion: reduce) { .print, .stage { transition: none } .print { transform: none } .print:hover { transform: none } }
+  @media (prefers-reduced-motion: reduce) { .tile img, .tile::after, .stage { transition: none } .tile:hover img { transform: none } }
 </style>
 </head>
 <body>
@@ -61,7 +65,7 @@
   <div class="rule"></div>
 </header>
 
-<main class="bench" id="bench" aria-label="Photos"></main>
+<main class="mosaic" id="mosaic" aria-label="Photos"></main>
 
 <footer><img src="logo.svg" alt="" width="36" height="27"></footer>
 
@@ -84,33 +88,30 @@ const PHOTOS = [
 ];
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const bench = document.getElementById("bench"), stage = document.getElementById("stage"), big = document.getElementById("s-img");
-// fixed tilts and nudges so the pile looks tossed but stays the same on every visit
-const TILT = [-3.2, 2.4, -1.4, 3.6, -2.6, 1.8, -3.8, 2.9, -1.9];
-const NUDGE = [[0, 10], [6, -8], [-6, 18], [4, -4], [-8, 6], [6, 14], [-4, -6], [8, 8], [-6, 12]];
+const mosaic = document.getElementById("mosaic"), stage = document.getElementById("stage"), big = document.getElementById("s-img");
+// one big tile, then two small, then two small and a big on the other side: the magazine-spread rhythm
+const isBig = (i) => i % 6 === 0 || i % 6 === 5;
 const prints = PHOTOS.map((p, i) => {
   const b = document.createElement("button");
-  b.className = "print" + (i % 3 === 1 ? " taped" : "");
-  b.style.setProperty("--r", TILT[i % TILT.length] + "deg");
-  b.style.setProperty("--dx", NUDGE[i % NUDGE.length][0] + "px");
-  b.style.setProperty("--dy", NUDGE[i % NUDGE.length][1] + "px");
+  b.className = "tile" + (isBig(i) ? " big" : "");
   b.setAttribute("aria-label", "Open photo: " + p.name);
   const img = document.createElement("img");
   img.src = p.src; img.alt = p.name; img.loading = i < 3 ? "eager" : "lazy";
+  if (p.src.includes("/drawn/")) img.className = "drawn"; // drawings fit whole; real photos fill the tile
   b.appendChild(img);
   b.addEventListener("click", () => open(i));
-  bench.appendChild(b);
+  mosaic.appendChild(b);
   return b;
 });
 
 let at = -1;
-// fly from the print's spot on the bench to the middle of the screen
+// grow from the tile's spot to the middle of the screen
 function flyFrom(el) {
   if (still || !el) return;
   const a = el.getBoundingClientRect(), b = big.getBoundingClientRect();
   if (!b.width) return;
   big.animate([
-    { transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${a.width / b.width}) rotate(${el.style.getPropertyValue("--r")})` },
+    { transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${a.width / b.width})` },
     { transform: "none" },
   ], { duration: 460, easing: "cubic-bezier(.2,.8,.2,1)" });
 }
