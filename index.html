@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LAA · Handmade Woodwork</title>
 <meta name="description" content="LAA: photos of handmade wood pieces.">
-<meta name="theme-color" content="#1F2A23">
+<meta name="theme-color" content="#26342B">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
   /* forest-green band for the mark, then a deck of photos on cream */
-  :root { --forest: #1F2A23; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #EFE9DE; --oak: #B97A3E; color-scheme: light }
+  :root { --forest: #1F2A23; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #17201A; --oak: #C98B4E; color-scheme: dark }
   * { box-sizing: border-box }
   html, body { margin: 0 }
-  body { background: var(--paper); color: #1D2620; font: 16px/1.5 "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden }
+  body { background: var(--paper); color: var(--cream); font: 16px/1.5 "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
 
-  header { background: radial-gradient(60% 120% at 50% 0%, rgb(169 195 166 / .2), transparent 70%), linear-gradient(170deg, #26342B, var(--forest) 70%);
+  header { background: radial-gradient(60% 120% at 50% 0%, rgb(169 195 166 / .2), transparent 70%), linear-gradient(180deg, #26342B, var(--paper));
     display: grid; justify-items: center; gap: 22px; padding: clamp(46px, 8vw, 88px) 20px clamp(40px, 6vw, 64px) }
   header img { width: clamp(140px, 20vw, 220px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 16px 30px rgb(0 0 0 / .4)) }
   header .rule { width: 60px; height: 3px; border-radius: 3px; background: var(--oak) }
@@ -25,27 +25,28 @@
   .field { position: relative; isolation: isolate; flex: 1; display: flex; flex-direction: column; justify-content: space-between }
   main { display: grid; justify-items: center; gap: 26px; padding: clamp(40px, 7vw, 76px) 20px clamp(56px, 8vw, 96px) }
   /* swell: a fine grid of green dots that rises and falls in slow rolling waves, quiet behind the photos */
-  #swell { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none }
+  #swell { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 110px); mask-image: linear-gradient(transparent, #000 110px) }
   .row { display: flex; align-items: center; gap: clamp(14px, 4vw, 44px) }
   .deck { position: relative; margin-bottom: 18px; width: min(78vw, 400px); aspect-ratio: 4 / 5; touch-action: pan-y; user-select: none; -webkit-user-select: none }
   .card { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; background: #EDE6D8; cursor: grab;
-    box-shadow: 0 2px 4px rgb(31 42 35 / .08), 0 24px 50px -24px rgb(31 42 35 / .55);
+    box-shadow: 0 2px 4px rgb(0 0 0 / .2), 0 28px 60px -24px rgb(0 0 0 / .75);
     transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .45s; will-change: transform }
   .card.dragging { transition: none; cursor: grabbing }
   .card img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none }
   .card img.drawn { object-fit: contain; padding: 6% }
-  .nav { width: 50px; height: 50px; flex: none; border-radius: 50%; border: 1px solid #DCD3C3; background: #FBF8F2; color: #1D2620; font-size: 22px; cursor: pointer;
+  .nav { width: 50px; height: 50px; flex: none; border-radius: 50%; border: 1px solid rgb(242 238 230 / .16); background: rgb(242 238 230 / .06); color: var(--cream); font-size: 22px; cursor: pointer;
     box-shadow: 0 6px 14px -8px rgb(31 42 35 / .4); transition: transform .2s, background .2s }
-  .nav:hover { transform: translateY(-2px); background: #fff }
+  .nav:hover { transform: translateY(-2px); background: rgb(242 238 230 / .14) }
   .nav:focus-visible, .deck:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
   .nav { display: none }
   @media (hover: hover) and (pointer: fine) and (min-width: 700px) { .nav { display: block } }
   .dots { display: flex; gap: 8px }
-  .dots i { width: 7px; height: 7px; border-radius: 99px; background: #D3C9B7; transition: width .35s, background .35s }
+  .dots i { width: 7px; height: 7px; border-radius: 99px; background: rgb(242 238 230 / .22); transition: width .35s, background .35s }
   .dots i.on { width: 22px; background: var(--oak) }
 
   footer { display: flex; justify-content: center; padding: 0 20px 40px }
-  footer img { width: 36px; height: auto; aspect-ratio: 100 / 75.83; opacity: .55 }
+  footer img { width: 36px; height: auto; aspect-ratio: 100 / 75.83; opacity: .4 }
 
   /* full-screen view when a card is tapped */
   .stage { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgb(18 24 20 / .92) }
@@ -90,7 +91,7 @@
   <div class="dots" id="dots" aria-hidden="true"></div>
 </main>
 
-<footer><img src="logo.svg" alt="" width="36" height="27"></footer>
+<footer><img src="logo-cream.svg" alt="" width="36" height="27"></footer>
 </div>
 
 <div class="stage" id="stage" hidden role="dialog" aria-modal="true" aria-label="Photo">
@@ -217,7 +218,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.h
   function frame(ms) {
     const t = ms / 1000;
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = "#2E3B32";
+    ctx.fillStyle = "#A9C3A6";
     const cx = w / 2, cy = h * 0.46, reach = Math.max(w, h) * 0.55;
     for (let y = GAP / 2; y < h; y += GAP) {
       for (let x = GAP / 2; x < w; x += GAP) {
@@ -226,7 +227,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.h
         const quiet = 0.28 + 0.72 * smooth(0.18, 0.62, Math.hypot(x - cx, (y - cy) * 1.15) / reach);
         const s = v * v * quiet;
         if (s < 0.03) continue;
-        ctx.globalAlpha = 0.08 + 0.55 * s;
+        ctx.globalAlpha = 0.05 + 0.42 * s;
         ctx.beginPath(); ctx.arc(x, y, 0.4 + 1.8 * s, 0, 6.2832); ctx.fill();
       }
     }
