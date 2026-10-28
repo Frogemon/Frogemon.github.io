@@ -4,211 +4,152 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LAA · Handmade Woodwork</title>
-<meta name="description" content="LAA: a gallery of handmade wood pieces.">
+<meta name="description" content="LAA: photos of handmade wood pieces.">
 <meta name="theme-color" content="#1F2A23">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://api.fontshare.com">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500,700&display=swap">
 <style>
-  /* one warm look on purpose: forest-green bands, cream paper, oiled-oak accent */
-  :root { --forest: #1F2A23; --green: #2E3B32; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #F6F2EA; --tile: #EDE6D8;
-    --ink: #1D2620; --muted: #6B736A; --oak: #B97A3E; --line: #E0D8C8;
-    --display: "Clash Display", "Segoe UI", system-ui, sans-serif; --body: "Satoshi", "Segoe UI", system-ui, sans-serif; color-scheme: light }
+  /* forest-green band for the mark, then a workbench of prints on cream */
+  :root { --forest: #1F2A23; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #EFE9DE; --print: #FCFAF5; --oak: #B97A3E; color-scheme: light }
   * { box-sizing: border-box }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); -webkit-font-smoothing: antialiased }
-  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
-
-  /* hero: green band with a soft glow; the featured photo hangs over its lower edge */
-  .hero { background: radial-gradient(60% 90% at 85% 0%, rgb(169 195 166 / .22), transparent 70%), linear-gradient(160deg, #26342B, var(--forest) 70%); color: var(--cream) }
-  /* the logo alone, centred; the featured photo centred beneath it */
-  .hero .wrap { display: grid; justify-items: center; gap: clamp(30px, 5vw, 52px); padding-top: clamp(48px, 8vw, 92px) }
-  .brand { display: grid; justify-items: center; gap: 22px }
-  .brand img { width: clamp(150px, 22vw, 240px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 16px 30px rgb(0 0 0 / .4)) }
-  .brand .rule { width: 64px; height: 3px; border-radius: 3px; background: var(--oak) }
+  html, body { margin: 0 }
+  body { background: var(--paper); color: #1D2620; font: 16px/1.5 "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
-  .featured { width: min(100%, 520px); margin-bottom: clamp(-120px, -9vw, -60px); position: relative; z-index: 2 }
-  @media (max-width: 760px) { .featured { margin-bottom: -56px } }
 
-  /* cards: every one sits in a fixed-shape frame, tilts gently toward the pointer */
-  .card { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; position: relative; cursor: zoom-in; background: var(--tile);
-    box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 24px 48px -26px rgb(31 42 35 / .55);
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s }
-  .card:hover { box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 34px 60px -26px rgb(31 42 35 / .65) }
-  .card:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
-  .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
-  .reel .card { padding: 10px; background: #FCFAF5; aspect-ratio: auto; border-radius: 18px; box-shadow: 0 1px 2px rgb(31 42 35 / .06), 0 18px 36px -22px rgb(31 42 35 / .45) }
-  .reel .card img { aspect-ratio: 4 / 5; height: auto; border-radius: 11px }
-  .reel .chip { left: 20px; top: 20px }
-  .card:hover img { transform: scale(1.04) }
-  .chip { position: absolute; left: 12px; top: 12px; padding: 5px 10px; border-radius: 99px; font-size: 12px; font-weight: 500; background: rgb(246 242 234 / .9); color: var(--muted); backdrop-filter: blur(4px) }
-  .featured .card { box-shadow: 0 30px 50px -28px rgb(0 0 0 / .55) }
+  header { background: radial-gradient(60% 120% at 50% 0%, rgb(169 195 166 / .2), transparent 70%), linear-gradient(170deg, #26342B, var(--forest) 70%);
+    display: grid; justify-items: center; gap: 22px; padding: clamp(46px, 8vw, 88px) 20px clamp(40px, 6vw, 64px) }
+  header img { width: clamp(140px, 20vw, 220px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 16px 30px rgb(0 0 0 / .4)) }
+  header .rule { width: 60px; height: 3px; border-radius: 3px; background: var(--oak) }
 
-  /* the work */
-  .work { padding-top: clamp(120px, 13vw, 180px); padding-bottom: 80px }
-  @media (max-width: 760px) { .work { padding-top: 92px } }
-  .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 26px }
-  .work-head h2 { font: 600 clamp(30px, 4vw, 42px)/1 var(--display); letter-spacing: .01em; margin: 0 }
-  .work-head span { color: var(--muted); font-size: 14px }
-  /* the reel: one line of pieces you swipe or step through; the centred one is shown full size */
-  .reel { display: flex; gap: clamp(16px, 3vw, 32px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
-    padding: 10px calc(100% - var(--slide)) 30px max(20px, env(safe-area-inset-left)); scroll-padding-inline: max(20px, env(safe-area-inset-left)); margin: 0 calc(-1 * max(20px, env(safe-area-inset-left))); scrollbar-width: none; --slide: clamp(250px, 28vw, 340px);
-    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 90px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 90px), transparent) }
-  .reel::-webkit-scrollbar { display: none }
-  .reel:focus-visible { outline: 2px solid var(--oak); outline-offset: -2px; border-radius: 12px }
-  .piece { margin: 0; flex: 0 0 var(--slide); scroll-snap-align: start; transition: opacity .5s; opacity: .62 }
-  .piece.on { opacity: 1 }
-  .piece:hover { opacity: 1 }
-  .controls { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 6px }
-  .progress { flex: 1; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; max-width: 420px }
-  .progress i { display: block; height: 100%; width: 0; background: var(--oak); transition: width .4s }
-  .step { display: flex; align-items: center; gap: 10px }
-  .step b { font: 500 14px var(--body); font-variant-numeric: tabular-nums; color: var(--muted); min-width: 64px; text-align: center }
-  .arrow { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 20px; cursor: pointer; transition: background .2s, transform .2s }
-  .arrow:hover { background: var(--tile); transform: translateY(-1px) }
-  .arrow:disabled { opacity: .35; cursor: default; transform: none }
-  .arrow:focus-visible { outline: 2px solid var(--oak); outline-offset: 2px }
-  .cap { display: flex; gap: 12px; align-items: baseline; margin-top: 14px }
-  .cap .n { font: 500 13px var(--body); color: var(--oak); font-variant-numeric: tabular-nums }
-  .cap .name { font: 600 19px/1.2 var(--display); letter-spacing: .01em }
+  /* the bench: prints laid out loosely, each tilted and nudged a little off its spot */
+  .bench { max-width: 1180px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) max(22px, env(safe-area-inset-left)) clamp(70px, 9vw, 120px);
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(26px, 4vw, 54px) clamp(18px, 3vw, 40px) }
+  @media (max-width: 860px) { .bench { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+  .print { all: unset; box-sizing: border-box; display: block; cursor: zoom-in; position: relative;
+    background: var(--print); padding: 10px 10px 34px; border-radius: 3px;
+    box-shadow: 0 1px 1px rgb(31 42 35 / .08), 0 10px 24px -10px rgb(31 42 35 / .45), 0 30px 50px -34px rgb(31 42 35 / .5);
+    transform: translate(var(--dx), var(--dy)) rotate(var(--r)); transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s }
+  .print img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #E7E0D2 }
+  .print:hover, .print:focus-visible { transform: translate(var(--dx), calc(var(--dy) - 8px)) rotate(0deg) scale(1.03); z-index: 2;
+    box-shadow: 0 2px 2px rgb(31 42 35 / .08), 0 22px 40px -14px rgb(31 42 35 / .5), 0 44px 70px -40px rgb(31 42 35 / .55) }
+  .print:focus-visible { outline: 2px solid var(--oak); outline-offset: 6px }
+  /* a strip of tape on some prints */
+  .print.taped::before { content: ""; position: absolute; top: -12px; left: 50%; width: 76px; height: 24px; transform: translateX(-50%) rotate(calc(var(--r) * -1.6));
+    background: rgb(233 222 196 / .82); box-shadow: 0 1px 2px rgb(0 0 0 / .08) }
 
-  footer { background: var(--forest); color: var(--cream) }
-  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: 26px 34px; font-size: 14px }
-  footer img { width: 34px; height: auto; aspect-ratio: 100 / 75.83; vertical-align: middle; margin-right: 12px }
-  footer .dim { color: var(--sage) }
+  footer { display: flex; justify-content: center; padding: 0 20px 40px }
+  footer img { width: 36px; height: auto; aspect-ratio: 100 / 75.83; opacity: .55 }
 
-  /* viewer */
-  dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1000px); overflow: visible; color: var(--cream) }
-  dialog::backdrop { background: rgb(20 28 23 / .86); backdrop-filter: blur(12px) }
-  dialog img { display: block; max-width: 100%; max-height: 82svh; border-radius: 16px }
-  dialog p { margin: 12px 4px 0; display: flex; justify-content: space-between; gap: 12px; font: 600 19px var(--display) }
-  dialog p small { font: 500 13px var(--body); color: var(--sage) }
-  .dlg-btn { position: absolute; top: 10px; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgb(31 42 35 / .8); color: var(--cream); font-size: 20px; cursor: pointer }
-  .dlg-btn:focus-visible { outline: 2px solid var(--oak) }
-  #close { right: 10px } #prev { left: 10px; top: 50% } #next { right: 10px; top: 50% }
-  [hidden] { display: none !important }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important } .card { transform: none !important } }
+  /* viewer: the picked print flies up to fill the screen */
+  .stage { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgb(18 24 20 / 0); transition: background .4s; touch-action: pan-y }
+  .stage.open { background: rgb(18 24 20 / .9) }
+  .stage[hidden] { display: none }
+  .stage img { max-width: min(92vw, 1100px); max-height: 86svh; border-radius: 6px; box-shadow: 0 40px 90px -30px #000; background: var(--print); padding: 8px }
+  .stage button { position: fixed; width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgb(242 238 230 / .14); color: var(--cream); font-size: 22px; cursor: pointer; opacity: 0; transition: opacity .3s, background .2s }
+  .stage.open button { opacity: 1 }
+  .stage button:hover { background: rgb(242 238 230 / .26) }
+  .stage button:focus-visible { outline: 2px solid var(--oak) }
+  #s-close { top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)) }
+  #s-prev { left: max(14px, env(safe-area-inset-left)); top: 50% }
+  #s-next { right: max(14px, env(safe-area-inset-right)); top: 50% }
+  @media (prefers-reduced-motion: reduce) { .print, .stage { transition: none } .print { transform: none } .print:hover { transform: none } }
 </style>
 </head>
 <body>
-<section class="hero">
-  <div class="wrap">
-    <div class="brand"><h1 class="sr">LAA</h1><img src="logo-cream.svg" alt="LAA logo" width="240" height="182"><div class="rule"></div></div>
-    <div class="featured" id="featured"></div>
-  </div>
-</section>
+<header>
+  <h1 class="sr">LAA</h1>
+  <img src="logo-cream.svg" alt="LAA logo" width="220" height="167">
+  <div class="rule"></div>
+</header>
 
-<main class="work wrap">
-  <div class="work-head"><h2>The work</h2><span id="count"></span></div>
-  <div class="reel" id="reel" tabindex="0" aria-label="Pieces, swipe or use the arrows"></div>
-  <div class="controls">
-    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
-    <div class="step"><button class="arrow" id="back" aria-label="Previous piece">‹</button><b id="where"></b><button class="arrow" id="fwd" aria-label="Next piece">›</button></div>
-  </div>
-</main>
+<main class="bench" id="bench" aria-label="Photos"></main>
 
-<footer><div class="wrap"><span><img src="logo-cream.svg" alt="" width="34" height="26">© LAA</span><span class="dim">Handmade woodwork</span></div></footer>
+<footer><img src="logo.svg" alt="" width="36" height="27"></footer>
 
-<dialog id="viewer" aria-label="Photo">
-  <button class="dlg-btn" id="close" aria-label="Close">×</button>
-  <button class="dlg-btn" id="prev" aria-label="Previous">‹</button>
-  <button class="dlg-btn" id="next" aria-label="Next">›</button>
-  <img id="big" alt="">
-  <p><span id="caption"></span><small id="pos"></small></p>
-</dialog>
+<div class="stage" id="stage" hidden role="dialog" aria-modal="true" aria-label="Photo">
+  <img id="s-img" alt="">
+  <button id="s-prev" aria-label="Previous photo">‹</button>
+  <button id="s-next" aria-label="Next photo">›</button>
+  <button id="s-close" aria-label="Close">×</button>
+</div>
 
 <script>
-// The gallery. The first entry is the big one at the top.
-// To add a real photo: put it in the photos folder and set photo: "photos/your-file.jpg".
-// Until then a piece shows its drawing (drawn: ...) with a "Drawing · photo soon" label.
-const PIECES = [
-  { name: "Stargazing Chair", photo: "photos/stargazing-chair.png" },
-  { name: "Wine & Glass Caddy", photo: "", drawn: "photos/drawn/caddy.jpg" },
-  { name: "Wine Bottle Wind Chimes", photo: "", drawn: "photos/drawn/chimes.jpg" },
-  { name: "Magic Wine Holder", photo: "", drawn: "photos/drawn/wine.jpg" },
-  { name: "Folding Stool", photo: "", drawn: "photos/drawn/stool.jpg" },
-  { name: "Beer Flight", photo: "", drawn: "photos/drawn/flight.jpg" },
+// The photos. To add one: put the file in the photos folder and add a line, or swap a drawing for the real photo.
+const PHOTOS = [
+  { name: "Stargazing Chair", src: "photos/stargazing-chair.png" },
+  { name: "Wine & Glass Caddy", src: "photos/drawn/caddy.jpg" },
+  { name: "Wine Bottle Wind Chimes", src: "photos/drawn/chimes.jpg" },
+  { name: "Magic Wine Holder", src: "photos/drawn/wine.jpg" },
+  { name: "Folding Stool", src: "photos/drawn/stool.jpg" },
+  { name: "Beer Flight", src: "photos/drawn/flight.jpg" },
 ];
 
-const viewer = document.getElementById("viewer"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const pad = (n) => String(n).padStart(2, "0");
-const src = (p) => p.photo || p.drawn;
-const SHOWN = PIECES.filter(src);
-document.getElementById("count").textContent = `${PIECES.length} pieces`;
-let at = 0;
-
-function show(i) {
-  at = (i + SHOWN.length) % SHOWN.length;
-  const p = SHOWN[at], big = document.getElementById("big");
-  big.src = src(p); big.alt = p.name;
-  document.getElementById("caption").textContent = p.name;
-  document.getElementById("pos").textContent = (p.photo ? "" : "Drawing · photo soon   ") + `${pad(at + 1)} / ${pad(SHOWN.length)}`;
-  for (const id of ["prev", "next"]) document.getElementById(id).hidden = SHOWN.length < 2;
-  if (!viewer.open) viewer.showModal();
-}
-
-function card(p) {
-  const btn = document.createElement("button");
-  btn.type = "button"; btn.className = "card";
-  btn.setAttribute("aria-label", "Open " + p.name);
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const bench = document.getElementById("bench"), stage = document.getElementById("stage"), big = document.getElementById("s-img");
+// fixed tilts and nudges so the pile looks tossed but stays the same on every visit
+const TILT = [-3.2, 2.4, -1.4, 3.6, -2.6, 1.8, -3.8, 2.9, -1.9];
+const NUDGE = [[0, 10], [6, -8], [-6, 18], [4, -4], [-8, 6], [6, 14], [-4, -6], [8, 8], [-6, 12]];
+const prints = PHOTOS.map((p, i) => {
+  const b = document.createElement("button");
+  b.className = "print" + (i % 3 === 1 ? " taped" : "");
+  b.style.setProperty("--r", TILT[i % TILT.length] + "deg");
+  b.style.setProperty("--dx", NUDGE[i % NUDGE.length][0] + "px");
+  b.style.setProperty("--dy", NUDGE[i % NUDGE.length][1] + "px");
+  b.setAttribute("aria-label", "Open photo: " + p.name);
   const img = document.createElement("img");
-  img.src = src(p); img.alt = p.photo ? p.name : "Drawing of " + p.name; img.loading = "lazy";
-  btn.appendChild(img);
-  if (!p.photo) { const c = document.createElement("span"); c.className = "chip"; c.textContent = "Drawing · photo soon"; btn.appendChild(c); }
-  btn.addEventListener("click", () => show(SHOWN.indexOf(p)));
-  if (!still) {
-    btn.addEventListener("pointermove", (e) => {
-      const r = btn.getBoundingClientRect();
-      btn.style.setProperty("--ry", (((e.clientX - r.left) / r.width - 0.5) * 7).toFixed(2) + "deg");
-      btn.style.setProperty("--rx", (-((e.clientY - r.top) / r.height - 0.5) * 7).toFixed(2) + "deg");
-    });
-    btn.addEventListener("pointerleave", () => { btn.style.removeProperty("--rx"); btn.style.removeProperty("--ry"); });
-  }
-  return btn;
-}
-
-PIECES.forEach((p, i) => {
-  if (!src(p)) return;
-  if (i === 0) { const f = card(p); f.querySelector("img").loading = "eager"; document.getElementById("featured").appendChild(f); return; }
-  const fig = document.createElement("figure");
-  fig.className = "piece";
-  fig.appendChild(card(p));
-  const cap = document.createElement("figcaption");
-  cap.className = "cap";
-  cap.innerHTML = `<span class="n"></span><span class="name"></span>`;
-  cap.querySelector(".n").textContent = pad(i + 1);
-  cap.querySelector(".name").textContent = p.name;
-  fig.appendChild(cap);
-  document.getElementById("reel").appendChild(fig);
+  img.src = p.src; img.alt = p.name; img.loading = i < 3 ? "eager" : "lazy";
+  b.appendChild(img);
+  b.addEventListener("click", () => open(i));
+  bench.appendChild(b);
+  return b;
 });
 
-// which piece is centred: drives the counter, the bar, the arrows and the full-size highlight
-const reel = document.getElementById("reel"), slides = [...reel.children];
-let current = 0;
-function mark(i) {
-  current = i;
-  slides.forEach((s, j) => s.classList.toggle("on", j === i));
-  document.getElementById("where").textContent = `${pad(i + 1)} / ${pad(slides.length)}`;
-  document.getElementById("bar").style.width = ((i + 1) / slides.length) * 100 + "%";
-  document.getElementById("back").disabled = i === 0;
-  document.getElementById("fwd").disabled = i === slides.length - 1;
+let at = -1;
+// fly from the print's spot on the bench to the middle of the screen
+function flyFrom(el) {
+  if (still || !el) return;
+  const a = el.getBoundingClientRect(), b = big.getBoundingClientRect();
+  if (!b.width) return;
+  big.animate([
+    { transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${a.width / b.width}) rotate(${el.style.getPropertyValue("--r")})` },
+    { transform: "none" },
+  ], { duration: 460, easing: "cubic-bezier(.2,.8,.2,1)" });
 }
-const go = (i) => slides[Math.max(0, Math.min(slides.length - 1, i))]?.scrollIntoView({ behavior: still ? "auto" : "smooth", inline: "start", block: "nearest" });
-// the current piece is the one snapped to the left edge
-const sync = () => {
-  const step = slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : 1;
-  mark(Math.min(slides.length - 1, Math.round(reel.scrollLeft / step)));
-};
-reel.addEventListener("scroll", () => requestAnimationFrame(sync), { passive: true });
-document.getElementById("back").onclick = () => go(current - 1);
-document.getElementById("fwd").onclick = () => go(current + 1);
-reel.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") { e.preventDefault(); go(current + 1); } if (e.key === "ArrowLeft") { e.preventDefault(); go(current - 1); } });
-if (slides.length) mark(0);
-
-document.getElementById("close").onclick = () => viewer.close();
-document.getElementById("prev").onclick = () => show(at - 1);
-document.getElementById("next").onclick = () => show(at + 1);
-viewer.addEventListener("click", (e) => { if (e.target === viewer) viewer.close(); });
-viewer.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") show(at - 1); if (e.key === "ArrowRight") show(at + 1); });
+function open(i) {
+  at = i;
+  big.src = PHOTOS[i].src; big.alt = PHOTOS[i].name;
+  stage.hidden = false;
+  document.body.style.overflow = "hidden";
+  stage.classList.add("open");
+  (big.decode ? big.decode() : Promise.resolve()).catch(() => {}).finally(() => flyFrom(prints[i]));
+  document.getElementById("s-close").focus();
+}
+function flip(d) {
+  at = (at + d + PHOTOS.length) % PHOTOS.length;
+  big.src = PHOTOS[at].src; big.alt = PHOTOS[at].name;
+  if (!still) big.animate([{ opacity: 0, transform: `translateX(${d * 40}px)` }, { opacity: 1, transform: "none" }], { duration: 320, easing: "ease-out" });
+}
+function close() {
+  stage.classList.remove("open");
+  const done = () => { stage.hidden = true; document.body.style.overflow = ""; prints[at]?.focus(); };
+  if (still) return done();
+  const a = prints[at].getBoundingClientRect(), b = big.getBoundingClientRect();
+  big.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${a.width / b.width})`, opacity: .2 }],
+    { duration: 380, easing: "cubic-bezier(.4,0,.2,1)" }).onfinish = done;
+}
+document.getElementById("s-close").onclick = close;
+document.getElementById("s-prev").onclick = (e) => { e.stopPropagation(); flip(-1); };
+document.getElementById("s-next").onclick = (e) => { e.stopPropagation(); flip(1); };
+stage.addEventListener("click", (e) => { if (e.target === stage) close(); });
+document.addEventListener("keydown", (e) => {
+  if (stage.hidden) return;
+  if (e.key === "Escape") close();
+  if (e.key === "ArrowRight") flip(1);
+  if (e.key === "ArrowLeft") flip(-1);
+});
+// swipe left/right on a phone to flip
+let x0 = null;
+stage.addEventListener("pointerdown", (e) => { x0 = e.clientX; });
+stage.addEventListener("pointerup", (e) => { if (x0 !== null && Math.abs(e.clientX - x0) > 50 && e.target === big) flip(e.clientX < x0 ? 1 : -1); x0 = null; });
 </script>
 </body>
 </html>
