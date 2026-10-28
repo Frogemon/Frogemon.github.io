@@ -74,20 +74,20 @@
   footer img { animation: fade 1s 1.4s ease-out both }
   .card img { transition: opacity .6s ease-out }
   .card img.loading { opacity: 0 }
-  /* splash: the mark traces itself, fills in, and lifts away (every load; tap to skip; a plain fade when motion is reduced) */
+  /* splash: the solid mark builds up from its base, then lifts away (every load; tap to skip; a plain fade when motion is reduced) */
   #splash { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 24px; cursor: pointer;
     background: radial-gradient(55% 50% at 50% 42%, rgb(169 195 166 / .14), transparent 70%), #1A231D; transition: opacity .7s ease, visibility .7s }
-  #splash svg { width: clamp(150px, 26vw, 250px); height: auto; overflow: visible; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
-  #splash path { fill: var(--cream); fill-opacity: 0; stroke: var(--cream); stroke-width: .45; stroke-linejoin: round }
+  #splash svg { width: clamp(150px, 26vw, 250px); height: auto; overflow: visible; transition: transform .8s cubic-bezier(.2,.8,.2,1); clip-path: inset(100% 0 0 0) }
+  #splash path { fill: var(--cream) }
   #splash .s-rule { width: 0; height: 3px; border-radius: 3px; background: var(--oak) }
-  #splash.go path { animation: trace 1.35s cubic-bezier(.65,0,.35,1) forwards, fill-in .55s 1.15s ease-out forwards }
+  #splash.go svg { animation: build 1.3s cubic-bezier(.65,0,.35,1) forwards, lift-in 1.3s cubic-bezier(.2,.8,.2,1) both }
   #splash.go .s-rule { animation: rule .6s 1.25s cubic-bezier(.2,.8,.2,1) forwards }
   #splash.out { opacity: 0; visibility: hidden } #splash.out svg { transform: scale(1.06) translateY(-8px) }
-  #splash.calm path { fill-opacity: 1; stroke: none } #splash.calm .s-rule { width: 60px }
+  #splash.calm svg { clip-path: none } #splash.calm .s-rule { width: 60px }
   #splash.calm svg, #splash.calm .s-rule { opacity: 0; transition: opacity .6s ease } #splash.calm.go svg, #splash.calm.go .s-rule { opacity: 1 }
-  #splash.calm.go path, #splash.calm.go .s-rule { animation: none }
-  @keyframes trace { to { stroke-dashoffset: 0 } }
-  @keyframes fill-in { to { fill-opacity: 1; stroke-opacity: 0 } }
+  #splash.calm.go svg, #splash.calm.go .s-rule { animation: none }
+  @keyframes build { to { clip-path: inset(0 0 0 0) } }
+  @keyframes lift-in { from { translate: 0 14px } }
   @keyframes rule { to { width: 60px } }
   /* hold the page's own entrance until the splash lifts */
   .splashing body > :not(#splash), .splashing body > :not(#splash) * { animation-play-state: paused !important }
@@ -184,8 +184,6 @@ let afterSplash = () => {};
   if (calm) splash.classList.add("calm");
   document.documentElement.classList.add("splashing");
   document.documentElement.style.overflow = "hidden";
-  const path = splash.querySelector("path"), len = path.getTotalLength();
-  if (!calm) { path.style.strokeDasharray = len; path.style.strokeDashoffset = len; }
   requestAnimationFrame(() => splash.classList.add("go"));
   let ended = false;
   const end = () => {
@@ -234,11 +232,15 @@ const ARC = 30;                                   // degrees between neighbourin
 let pos = 0, target = 0, radius = 0, raf = 0, prev = 0;
 const wrap = (d) => ((d % N) + N * 1.5) % N - N / 2; // -N/2..N/2
 const front = () => ((Math.round(target) % N) + N) % N;
+let idleT = 0, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, hoverI = -1;
+const lift = cards.map(() => 0);
 function place() { radius = cards[0].offsetWidth * 1.85; draw(); }
 function draw() {
+  ring.style.transform = `rotateX(${tiltY}deg) rotateY(${tiltX}deg)`;
   cards.forEach((c, i) => {
     const rel = wrap(i - pos), d = Math.abs(rel);
-    c.style.transform = `translateZ(${-radius}px) rotateY(${rel * ARC}deg) translateZ(${radius}px)`;
+    const bob = still ? 0 : Math.sin(idleT * 1.1 + i * 1.7) * 5, sway = still ? 0 : Math.sin(idleT * 0.8 + i * 2.3) * 0.6, l = lift[i];
+    c.style.transform = `translateZ(${-radius}px) rotateY(${rel * ARC}deg) translateZ(${radius + l * 34}px) translateY(${bob - l * 12}px) rotate(${sway}deg)`;
     c.style.opacity = d < 2.6 ? Math.max(0, 1 - d * 0.3 - Math.max(0, d - 2) * 0.9).toFixed(3) : "0";
     c.style.filter = `brightness(${(1 - Math.min(d, 2.5) * 0.2).toFixed(3)})`;
     c.style.zIndex = 100 - Math.round(d * 10);
@@ -381,6 +383,34 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.h
   new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; start(); }).observe(host);
   document.addEventListener("visibilitychange", start);
   size(); frame(0); start();
+})();
+
+// the idle motion: a slow loop that only runs while the wheel is on screen and the tab is visible
+(() => {
+  if (still) return;
+  let on = true, running = false, last = 0;
+  function loop(ms) {
+    if (!on || document.hidden) { running = false; return; }
+    if (ms - last > 30) {
+      last = ms; idleT = ms / 1000;
+      tiltX += (aimX - tiltX) * 0.08; tiltY += (aimY - tiltY) * 0.08;
+      cards.forEach((_, i) => (lift[i] += ((i === hoverI && !drag ? 1 : 0) - lift[i]) * 0.15));
+      if (!raf) draw();
+    }
+    requestAnimationFrame(loop);
+  }
+  const run = () => { if (!running && on && !document.hidden) { running = true; requestAnimationFrame(loop); } };
+  new IntersectionObserver((e) => { on = e[0].isIntersecting; run(); }).observe(wheel);
+  document.addEventListener("visibilitychange", run);
+  wheel.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    const b = wheel.getBoundingClientRect(), c = e.target.closest(".card");
+    aimX = ((e.clientX - b.left) / b.width - 0.5) * 6;
+    aimY = -((e.clientY - b.top) / b.height - 0.5) * 5;
+    hoverI = c ? +c.dataset.i : -1;
+  });
+  wheel.addEventListener("pointerleave", () => { aimX = aimY = 0; hoverI = -1; });
+  run();
 })();
 
 place();
