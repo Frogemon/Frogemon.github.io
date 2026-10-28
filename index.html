@@ -8,89 +8,73 @@
 <meta name="theme-color" content="#141A16">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://api.fontshare.com">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500,700&display=swap">
 <style>
   /* palette: forest-night ground, brand green, cream, oiled-oak accent */
   :root {
-    --night: #141A16; --forest: #1F2A23; --green: #2E3B32; --sage: #8FA58E;
-    --cream: #F2EEE6; --dim: #A9B3A8; --oak: #C98B4E; --line: rgb(242 238 230 / .12);
+    --night: #141A16; --forest: #1D2620; --sage: #9DB29C; --cream: #F2EEE6; --dim: #AEB8AD; --oak: #C98B4E; --line: rgb(242 238 230 / .12);
     --display: "Clash Display", "Segoe UI", system-ui, sans-serif;
     --body: "Satoshi", "Segoe UI", system-ui, sans-serif;
   }
   * { box-sizing: border-box }
-  html { scroll-behavior: smooth }
   body { margin: 0; background: var(--night); color: var(--cream); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased }
-  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)) }
+  .wrap { max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
 
-  /* hero: the mark large, a soft grain of light behind it */
-  .hero { position: relative; min-height: 62svh; display: grid; align-content: end; padding-block: 48px 40px; overflow: hidden; isolation: isolate }
-  .hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70vmax; height: 70vmax; z-index: -1;
-    background: radial-gradient(closest-side, rgb(143 165 142 / .28), transparent 70%); filter: blur(10px) }
-  .mark { width: clamp(96px, 18vw, 170px); height: auto; margin-bottom: 28px; filter: drop-shadow(0 14px 30px rgb(0 0 0 / .45)) }
-  .hero h1 { font: 700 clamp(84px, 22vw, 260px)/.82 var(--display); letter-spacing: -0.04em; margin: 0;
-    background: linear-gradient(180deg, var(--cream) 30%, rgb(242 238 230 / .55)); -webkit-background-clip: text; background-clip: text; color: transparent }
-  .hero p { margin: 18px 0 0; max-width: 34ch; color: var(--dim); font-size: clamp(17px, 2.2vw, 21px) }
-  .hero .cue { margin-top: 34px; display: inline-flex; align-items: center; gap: 10px; color: var(--sage); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none }
-  .hero .cue span { width: 1px; height: 38px; background: linear-gradient(var(--sage), transparent) }
+  /* hero: name on the left, the featured piece large on the right; stacks on phones */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding-block: clamp(36px, 7vw, 84px) 56px }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding-top: 32px } }
+  .brand { display: flex; align-items: center; gap: 18px }
+  .brand img { width: clamp(64px, 9vw, 92px); height: auto; aspect-ratio: 100 / 75.83 }
+  .hero h1 { font: 600 clamp(56px, 9vw, 104px)/1 var(--display); letter-spacing: .02em; margin: 0 }
+  .hero p { margin: 22px 0 0; max-width: 32ch; color: var(--dim); font-size: clamp(17px, 1.8vw, 20px) }
+  .rule { width: 56px; height: 2px; background: var(--oak); margin-top: 26px; border-radius: 2px }
 
-  /* gallery: staggered columns, each photo a card with depth */
-  .gallery { padding-block: 24px 80px }
-  .gallery header { display: flex; justify-content: space-between; align-items: end; gap: 16px; border-top: 1px solid var(--line); padding-top: 22px; margin-bottom: 26px }
-  .gallery h2 { font: 600 clamp(28px, 4vw, 40px)/1 var(--display); margin: 0; letter-spacing: -0.02em }
-  .gallery header small { color: var(--dim); font-size: 14px }
-  .grid { columns: 3 300px; column-gap: 22px }
-  .piece { break-inside: avoid; margin: 0 0 22px; perspective: 900px }
-  .piece button { all: unset; display: block; width: 100%; cursor: zoom-in; border-radius: 18px; overflow: hidden; position: relative; background: var(--forest);
-    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s; box-shadow: 0 24px 50px -24px rgb(0 0 0 / .7) }
-  .piece button:hover { box-shadow: 0 34px 70px -26px rgb(0 0 0 / .85) }
-  .piece button:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
-  .piece img { display: block; width: 100%; height: auto; transform: scale(1.02); transition: transform .8s cubic-bezier(.2,.8,.2,1) }
-  .piece button:hover img { transform: scale(1.07) }
-  .piece figcaption { position: absolute; inset: auto 0 0; padding: 40px 18px 16px; font: 600 20px/1.2 var(--display); letter-spacing: -0.01em;
-    background: linear-gradient(transparent, rgb(10 14 11 / .78)) }
-  .piece figcaption::after { content: "View"; float: right; font: 500 12px/2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--sage) }
+  /* every photo sits in a fixed-shape frame, so nothing collapses while it loads */
+  .frame { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; position: relative; cursor: zoom-in;
+    background: var(--forest); box-shadow: 0 30px 60px -30px rgb(0 0 0 / .8), 0 0 0 1px var(--line);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .45s cubic-bezier(.2,.8,.2,1) }
+  .frame:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
+  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
+  .frame:hover img { transform: scale(1.05) }
+  .frame .tag { position: absolute; left: 14px; bottom: 14px; padding: 7px 12px; border-radius: 99px; background: rgb(20 26 22 / .72); backdrop-filter: blur(6px);
+    font: 600 15px/1 var(--display); letter-spacing: .01em }
 
-  /* scroll-driven entrance where the browser supports it; still visible everywhere else */
-  @supports (animation-timeline: view()) {
-    .piece { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 100% }
-    @keyframes rise { from { opacity: .15; translate: 0 60px; scale: .96 } to { opacity: 1; translate: 0 0; scale: 1 } }
-  }
+  /* more pieces, once there are several photos */
+  .gallery { padding-block: 8px 72px }
+  .gallery h2 { font: 600 clamp(26px, 3.4vw, 34px)/1 var(--display); letter-spacing: .01em; margin: 0 0 22px; padding-top: 26px; border-top: 1px solid var(--line) }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 20px }
 
-  footer { border-top: 1px solid var(--line); padding-block: 26px 40px; color: var(--dim); font-size: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap }
-  footer img { width: 34px; height: auto; vertical-align: middle; margin-right: 10px; opacity: .8 }
+  footer { border-top: 1px solid var(--line); padding-block: 24px 36px; color: var(--dim); font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap }
+  footer img { width: 30px; height: auto; aspect-ratio: 100 / 75.83; vertical-align: middle; margin-right: 10px; opacity: .8 }
 
   /* lightbox */
   dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1100px); overflow: visible }
-  dialog::backdrop { background: rgb(8 11 9 / .78); backdrop-filter: blur(14px) }
-  dialog[open] img { animation: pop .35s cubic-bezier(.2,.8,.2,1) }
-  @keyframes pop { from { opacity: 0; scale: .96 } }
-  dialog img { display: block; max-width: 100%; max-height: 82svh; border-radius: 16px; box-shadow: 0 40px 90px -30px #000 }
-  dialog p { margin: 14px 4px 0; font: 600 22px var(--display); display: flex; justify-content: space-between; align-items: center; gap: 12px }
+  dialog::backdrop { background: rgb(8 11 9 / .8); backdrop-filter: blur(14px) }
+  dialog img { display: block; max-width: 100%; max-height: 82svh; border-radius: 16px }
+  dialog p { margin: 14px 4px 0; font: 600 20px var(--display); display: flex; justify-content: space-between; gap: 12px }
   dialog p small { font: 500 13px var(--body); color: var(--dim) }
-  .dlg-btn { position: absolute; top: 10px; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgb(20 26 22 / .7); color: var(--cream); font-size: 20px; cursor: pointer; backdrop-filter: blur(6px) }
+  .dlg-btn { position: absolute; top: 10px; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgb(20 26 22 / .75); color: var(--cream); font-size: 20px; cursor: pointer }
   .dlg-btn:focus-visible { outline: 2px solid var(--oak) }
   #close { right: 10px } #prev { left: 10px; top: 50% } #next { right: 10px; top: 50% }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important }
-    .piece button { transform: none !important }
-  }
+  [hidden] { display: none !important }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important } .frame { transform: none !important } }
 </style>
 </head>
 <body>
 <section class="hero wrap">
-  <img class="mark" src="logo.svg" alt="LAA logo">
-  <h1>LAA</h1>
-  <p>Handmade woodwork, cut, shaped and finished by hand.</p>
-  <a class="cue" href="#work"><span></span>See the work</a>
+  <div>
+    <div class="brand"><img src="logo.svg" alt="LAA logo" width="92" height="70"><h1>LAA</h1></div>
+    <div class="rule"></div>
+  </div>
+  <div id="feature"></div>
 </section>
 
-<section class="gallery wrap" id="work">
-  <header><h2>The work</h2><small id="count"></small></header>
+<section class="gallery wrap" id="more" hidden>
+  <h2>More pieces</h2>
   <div class="grid" id="grid"></div>
 </section>
 
-<footer class="wrap"><span><img src="logo.svg" alt="">© LAA</span><span>Handmade woodwork</span></footer>
+<footer class="wrap"><span><img src="logo.svg" alt="" width="30" height="23">© LAA</span><span>Handmade woodwork</span></footer>
 
 <dialog id="viewer" aria-label="Photo">
   <button class="dlg-btn" id="close" aria-label="Close">×</button>
@@ -101,47 +85,51 @@
 </dialog>
 
 <script>
-// The gallery. To add a picture: put the file in the photos folder and add a line here.
+// The gallery. The first photo is the big one at the top. To add a picture: put the file in the photos folder and add a line here.
 const PHOTOS = [
   { name: "Stargazing Chair", photo: "photos/stargazing-chair.png" },
 ];
 
-const grid = document.getElementById("grid"), viewer = document.getElementById("viewer");
+const viewer = document.getElementById("viewer");
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let at = 0;
-document.getElementById("count").textContent = PHOTOS.length + (PHOTOS.length === 1 ? " piece" : " pieces");
 
 function show(i) {
   at = (i + PHOTOS.length) % PHOTOS.length;
   const p = PHOTOS[at], big = document.getElementById("big");
   big.src = p.photo; big.alt = p.name;
   document.getElementById("caption").textContent = p.name;
-  document.getElementById("pos").textContent = `${at + 1} / ${PHOTOS.length}`;
+  document.getElementById("pos").textContent = PHOTOS.length > 1 ? `${at + 1} / ${PHOTOS.length}` : "";
   for (const id of ["prev", "next"]) document.getElementById(id).hidden = PHOTOS.length < 2;
   if (!viewer.open) viewer.showModal();
 }
 
-PHOTOS.forEach((p, i) => {
-  const fig = document.createElement("figure");
-  fig.className = "piece";
-  fig.innerHTML = `<button type="button"><img loading="lazy"><figcaption></figcaption></button>`;
-  const btn = fig.querySelector("button"), img = fig.querySelector("img");
-  img.src = p.photo; img.alt = p.name;
+function frame(p, i) {
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "frame";
   btn.setAttribute("aria-label", "Open photo: " + p.name);
-  fig.querySelector("figcaption").textContent = p.name;
+  btn.innerHTML = `<img alt=""><span class="tag"></span>`;
+  btn.querySelector("img").src = p.photo;
+  btn.querySelector("img").alt = p.name;
+  btn.querySelector(".tag").textContent = p.name;
   btn.addEventListener("click", () => show(i));
   // a gentle 3D tilt toward the pointer
   if (!still) {
     btn.addEventListener("pointermove", (e) => {
-      const r = btn.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      btn.style.setProperty("--ry", (x * 8).toFixed(2) + "deg");
-      btn.style.setProperty("--rx", (-y * 8).toFixed(2) + "deg");
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty("--ry", (((e.clientX - r.left) / r.width - 0.5) * 7).toFixed(2) + "deg");
+      btn.style.setProperty("--rx", (-((e.clientY - r.top) / r.height - 0.5) * 7).toFixed(2) + "deg");
     });
     btn.addEventListener("pointerleave", () => { btn.style.removeProperty("--rx"); btn.style.removeProperty("--ry"); });
   }
-  grid.appendChild(fig);
-});
+  return btn;
+}
 
+if (PHOTOS.length) document.getElementById("feature").appendChild(frame(PHOTOS[0], 0));
+if (PHOTOS.length > 1) {
+  document.getElementById("more").hidden = false;
+  PHOTOS.slice(1).forEach((p, j) => document.getElementById("grid").appendChild(frame(p, j + 1)));
+}
 document.getElementById("close").onclick = () => viewer.close();
 document.getElementById("prev").onclick = () => show(at - 1);
 document.getElementById("next").onclick = () => show(at + 1);
