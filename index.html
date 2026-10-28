@@ -50,13 +50,22 @@
   .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 26px }
   .work-head h2 { font: 600 clamp(30px, 4vw, 42px)/1 var(--display); letter-spacing: .01em; margin: 0 }
   .work-head span { color: var(--muted); font-size: 14px }
-  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 26px }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-  @media (max-width: 520px) { .grid { grid-template-columns: 1fr } }
-  .piece { margin: 0 }
-  .grid .piece:nth-child(3n + 2) { margin-top: 40px } /* a gentle stagger, like pieces set out on a bench */
-  @media (max-width: 900px) { .grid .piece:nth-child(3n + 2) { margin-top: 0 } .grid .piece:nth-child(2n) { margin-top: 36px } }
-  @media (max-width: 520px) { .grid .piece:nth-child(2n) { margin-top: 0 } }
+  /* the reel: one line of pieces you swipe or step through; the centred one is shown full size */
+  .reel { display: flex; gap: clamp(16px, 3vw, 32px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    padding: 10px calc(100% - var(--slide)) 30px max(20px, env(safe-area-inset-left)); scroll-padding-inline: max(20px, env(safe-area-inset-left)); margin: 0 calc(-1 * max(20px, env(safe-area-inset-left))); scrollbar-width: none; --slide: clamp(260px, 40vw, 440px) }
+  .reel::-webkit-scrollbar { display: none }
+  .reel:focus-visible { outline: 2px solid var(--oak); outline-offset: -2px; border-radius: 12px }
+  .piece { flex: 0 0 var(--slide); scroll-snap-align: start; transform-origin: left center; transition: transform .5s cubic-bezier(.2,.8,.2,1), opacity .5s; transform: scale(.94); opacity: .72 }
+  .piece.on { transform: none; opacity: 1 }
+  .controls { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 6px }
+  .progress { flex: 1; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; max-width: 420px }
+  .progress i { display: block; height: 100%; width: 0; background: var(--oak); transition: width .4s }
+  .step { display: flex; align-items: center; gap: 10px }
+  .step b { font: 500 14px var(--body); font-variant-numeric: tabular-nums; color: var(--muted); min-width: 64px; text-align: center }
+  .arrow { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 20px; cursor: pointer; transition: background .2s, transform .2s }
+  .arrow:hover { background: var(--tile); transform: translateY(-1px) }
+  .arrow:disabled { opacity: .35; cursor: default; transform: none }
+  .arrow:focus-visible { outline: 2px solid var(--oak); outline-offset: 2px }
   .cap { display: flex; gap: 12px; align-items: baseline; margin-top: 14px }
   .cap .n { font: 500 13px var(--body); color: var(--oak); font-variant-numeric: tabular-nums }
   .cap .name { font: 600 19px/1.2 var(--display); letter-spacing: .01em }
@@ -89,7 +98,11 @@
 
 <main class="work wrap">
   <div class="work-head"><h2>The work</h2><span id="count"></span></div>
-  <div class="grid" id="grid"></div>
+  <div class="reel" id="reel" tabindex="0" aria-label="Pieces, swipe or use the arrows"></div>
+  <div class="controls">
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <div class="step"><button class="arrow" id="back" aria-label="Previous piece">‹</button><b id="where"></b><button class="arrow" id="fwd" aria-label="Next piece">›</button></div>
+  </div>
 </main>
 
 <footer><div class="wrap"><span><img src="logo-cream.svg" alt="" width="34" height="26">© LAA</span><span class="dim">Handmade woodwork</span></div></footer>
@@ -164,8 +177,31 @@ PIECES.forEach((p, i) => {
   cap.querySelector(".n").textContent = pad(i + 1);
   cap.querySelector(".name").textContent = p.name;
   fig.appendChild(cap);
-  document.getElementById("grid").appendChild(fig);
+  document.getElementById("reel").appendChild(fig);
 });
+
+// which piece is centred: drives the counter, the bar, the arrows and the full-size highlight
+const reel = document.getElementById("reel"), slides = [...reel.children];
+let current = 0;
+function mark(i) {
+  current = i;
+  slides.forEach((s, j) => s.classList.toggle("on", j === i));
+  document.getElementById("where").textContent = `${pad(i + 1)} / ${pad(slides.length)}`;
+  document.getElementById("bar").style.width = ((i + 1) / slides.length) * 100 + "%";
+  document.getElementById("back").disabled = i === 0;
+  document.getElementById("fwd").disabled = i === slides.length - 1;
+}
+const go = (i) => slides[Math.max(0, Math.min(slides.length - 1, i))]?.scrollIntoView({ behavior: still ? "auto" : "smooth", inline: "start", block: "nearest" });
+// the current piece is the one snapped to the left edge
+const sync = () => {
+  const step = slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : 1;
+  mark(Math.min(slides.length - 1, Math.round(reel.scrollLeft / step)));
+};
+reel.addEventListener("scroll", () => requestAnimationFrame(sync), { passive: true });
+document.getElementById("back").onclick = () => go(current - 1);
+document.getElementById("fwd").onclick = () => go(current + 1);
+reel.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") { e.preventDefault(); go(current + 1); } if (e.key === "ArrowLeft") { e.preventDefault(); go(current - 1); } });
+if (slides.length) mark(0);
 
 document.getElementById("close").onclick = () => viewer.close();
 document.getElementById("prev").onclick = () => show(at - 1);
