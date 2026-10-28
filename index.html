@@ -5,141 +5,166 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LAA · Handmade Woodwork</title>
 <meta name="description" content="LAA: a gallery of handmade wood pieces.">
-<meta name="theme-color" content="#F4F2ED">
+<meta name="theme-color" content="#1F2A23">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://api.fontshare.com">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500,700&display=swap">
 <style>
-  /* minimal catalogue: paper ground, ink type, one green accent; dark mode follows the phone */
-  :root { --paper: #F4F2ED; --tile: #E9E6DF; --ink: #161A17; --muted: #7A7F79; --line: #D9D5CC; --accent: #2E3B32;
-    --font: "General Sans", "Segoe UI", system-ui, sans-serif; color-scheme: light }
-  @media (prefers-color-scheme: dark) { :root { --paper: #121513; --tile: #1B201C; --ink: #ECE8E0; --muted: #8C938B; --line: #2A302B; --accent: #A9C3A6; color-scheme: dark } }
+  /* one warm look on purpose: forest-green bands, cream paper, oiled-oak accent */
+  :root { --forest: #1F2A23; --green: #2E3B32; --sage: #A9C3A6; --cream: #F2EEE6; --paper: #F6F2EA; --tile: #EDE6D8;
+    --ink: #1D2620; --muted: #6B736A; --oak: #B97A3E; --line: #E0D8C8;
+    --display: "Clash Display", "Segoe UI", system-ui, sans-serif; --body: "Satoshi", "Segoe UI", system-ui, sans-serif; color-scheme: light }
   * { box-sizing: border-box }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased }
-  .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
-  .num { font-variant-numeric: tabular-nums; color: var(--muted) }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); -webkit-font-smoothing: antialiased }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)) }
 
-  /* top bar */
-  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(10px) }
-  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; border-bottom: 1px solid var(--line) }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: .08em; text-decoration: none; color: inherit }
-  .brand img { width: 30px; height: auto; aspect-ratio: 100 / 75.83 }
-  nav .count { font-size: 13px }
+  /* hero: green band with a soft glow; the featured photo hangs over its lower edge */
+  .hero { background: radial-gradient(60% 90% at 85% 0%, rgb(169 195 166 / .22), transparent 70%), linear-gradient(160deg, #26342B, var(--forest) 70%); color: var(--cream) }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: end; padding-top: clamp(40px, 7vw, 84px) }
+  .brand { padding-bottom: clamp(40px, 7vw, 96px) }
+  .brand img { width: clamp(84px, 11vw, 132px); height: auto; aspect-ratio: 100 / 75.83; filter: drop-shadow(0 12px 24px rgb(0 0 0 / .35)) }
+  .brand h1 { font: 600 clamp(60px, 10vw, 120px)/1 var(--display); letter-spacing: .03em; margin: 18px 0 0 }
+  .brand .rule { width: 64px; height: 3px; border-radius: 3px; background: var(--oak); margin-top: 22px }
+  .featured { margin-bottom: clamp(-120px, -9vw, -60px); position: relative; z-index: 2 }
+  @media (max-width: 760px) {
+    .hero .wrap { grid-template-columns: 1fr; gap: 6px }
+    .brand { padding-bottom: 8px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap }
+    .brand h1 { margin: 0 } .brand .rule { display: none }
+    .featured { margin-bottom: -56px }
+  }
 
-  /* intro: the name, large and quiet */
-  .intro { padding-block: clamp(48px, 10vw, 120px) clamp(28px, 5vw, 56px) }
-  .intro h1 { margin: 0; font-weight: 500; font-size: clamp(56px, 13vw, 168px); line-height: .9; letter-spacing: .01em }
-  .intro .meta { display: flex; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted) }
+  /* cards: every one sits in a fixed-shape frame, tilts gently toward the pointer */
+  .card { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; position: relative; cursor: zoom-in; background: var(--tile);
+    box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 24px 48px -26px rgb(31 42 35 / .55);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s }
+  .card:hover { box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 34px 60px -26px rgb(31 42 35 / .65) }
+  .card:focus-visible { outline: 2px solid var(--oak); outline-offset: 4px }
+  .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1) }
+  .card:hover img { transform: scale(1.04) }
+  .chip { position: absolute; left: 12px; top: 12px; padding: 5px 10px; border-radius: 99px; font-size: 12px; font-weight: 500; background: rgb(246 242 234 / .9); color: var(--muted); backdrop-filter: blur(4px) }
+  .featured .card { box-shadow: 0 40px 80px -30px rgb(0 0 0 / .6) }
 
-  /* the work: a numbered index of pieces */
-  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 36px) clamp(14px, 2vw, 24px); padding-bottom: 96px }
+  /* the work */
+  .work { padding-top: clamp(100px, 12vw, 160px); padding-bottom: 80px }
+  @media (max-width: 760px) { .work { padding-top: 92px } }
+  .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 26px }
+  .work-head h2 { font: 600 clamp(30px, 4vw, 42px)/1 var(--display); letter-spacing: .01em; margin: 0 }
+  .work-head span { color: var(--muted); font-size: 14px }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 26px }
   @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-  @media (max-width: 540px) { .grid { grid-template-columns: 1fr } }
-  .piece { margin: 0; display: grid; gap: 10px }
-  .piece.lead { grid-column: span 2; grid-row: span 2 }
-  @media (max-width: 540px) { .piece.lead { grid-column: auto; grid-row: auto } }
-  .shot { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 4 / 5; background: var(--tile); overflow: hidden; border-radius: 4px; cursor: zoom-in; position: relative }
-  .piece.lead .shot { aspect-ratio: auto; height: 100% ; min-height: 320px }
-  @media (max-width: 540px) { .piece.lead .shot { aspect-ratio: 4 / 5; height: auto } }
-  .shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
-  .shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .9s cubic-bezier(.2,.7,.2,1), opacity .6s }
-  .shot:hover img { transform: scale(1.03) }
-  .shot.soon { cursor: default; display: grid; place-items: center }
-  .shot.soon img { width: 44px; height: auto; object-fit: contain; opacity: .18; filter: grayscale(1) }
-  @media (prefers-color-scheme: dark) { .shot.soon img { filter: grayscale(1) invert(1) } }
-  .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px }
-  .cap span:first-child { display: flex; gap: 12px }
-  .cap .tagline { color: var(--muted); font-size: 13px }
+  @media (max-width: 520px) { .grid { grid-template-columns: 1fr } }
+  .piece { margin: 0 }
+  .grid .piece:nth-child(3n + 2) { margin-top: 40px } /* a gentle stagger, like pieces set out on a bench */
+  @media (max-width: 900px) { .grid .piece:nth-child(3n + 2) { margin-top: 0 } .grid .piece:nth-child(2n) { margin-top: 36px } }
+  @media (max-width: 520px) { .grid .piece:nth-child(2n) { margin-top: 0 } }
+  .cap { display: flex; gap: 12px; align-items: baseline; margin-top: 14px }
+  .cap .n { font: 500 13px var(--body); color: var(--oak); font-variant-numeric: tabular-nums }
+  .cap .name { font: 600 19px/1.2 var(--display); letter-spacing: .01em }
 
-  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-block: 22px 36px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted) }
+  footer { background: var(--forest); color: var(--cream) }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: 26px 34px; font-size: 14px }
+  footer img { width: 34px; height: auto; aspect-ratio: 100 / 75.83; vertical-align: middle; margin-right: 12px }
+  footer .dim { color: var(--sage) }
 
   /* viewer */
-  dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1100px); overflow: visible; color: #ECE8E0 }
-  dialog::backdrop { background: rgb(12 14 13 / .9) }
-  dialog img { display: block; max-width: 100%; max-height: 84svh; border-radius: 4px }
-  dialog p { margin: 12px 2px 0; display: flex; justify-content: space-between; font-size: 14px }
-  .dlg-btn { position: absolute; top: 10px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgb(18 21 19 / .7); color: #ECE8E0; font: 18px var(--font); cursor: pointer }
-  .dlg-btn:focus-visible { outline: 2px solid #A9C3A6 }
+  dialog { border: 0; padding: 0; background: transparent; max-width: min(94vw, 1000px); overflow: visible; color: var(--cream) }
+  dialog::backdrop { background: rgb(20 28 23 / .86); backdrop-filter: blur(12px) }
+  dialog img { display: block; max-width: 100%; max-height: 82svh; border-radius: 16px }
+  dialog p { margin: 12px 4px 0; display: flex; justify-content: space-between; gap: 12px; font: 600 19px var(--display) }
+  dialog p small { font: 500 13px var(--body); color: var(--sage) }
+  .dlg-btn { position: absolute; top: 10px; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgb(31 42 35 / .8); color: var(--cream); font-size: 20px; cursor: pointer }
+  .dlg-btn:focus-visible { outline: 2px solid var(--oak) }
   #close { right: 10px } #prev { left: 10px; top: 50% } #next { right: 10px; top: 50% }
   [hidden] { display: none !important }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important } .card { transform: none !important } }
 </style>
 </head>
 <body>
-<nav><div class="wrap">
-  <a class="brand" href="#"><img src="logo.svg" alt="" width="30" height="23">LAA</a>
-  <span class="count num" id="count"></span>
-</div></nav>
+<section class="hero">
+  <div class="wrap">
+    <div class="brand"><img src="logo-cream.svg" alt="LAA logo" width="132" height="100"><h1>LAA</h1><div class="rule"></div></div>
+    <div class="featured" id="featured"></div>
+  </div>
+</section>
 
-<header class="intro wrap">
-  <h1>LAA</h1>
-  <div class="meta"><span>Handmade woodwork</span><span class="num" id="year"></span></div>
-</header>
+<main class="work wrap">
+  <div class="work-head"><h2>The work</h2><span id="count"></span></div>
+  <div class="grid" id="grid"></div>
+</main>
 
-<main class="wrap"><div class="grid" id="grid"></div></main>
-
-<footer><div class="wrap"><span>© LAA</span><span>frogemon.github.io</span></div></footer>
+<footer><div class="wrap"><span><img src="logo-cream.svg" alt="" width="34" height="26">© LAA</span><span class="dim">Handmade woodwork</span></div></footer>
 
 <dialog id="viewer" aria-label="Photo">
   <button class="dlg-btn" id="close" aria-label="Close">×</button>
-  <button class="dlg-btn" id="prev" aria-label="Previous photo">‹</button>
-  <button class="dlg-btn" id="next" aria-label="Next photo">›</button>
+  <button class="dlg-btn" id="prev" aria-label="Previous">‹</button>
+  <button class="dlg-btn" id="next" aria-label="Next">›</button>
   <img id="big" alt="">
-  <p><span id="caption"></span><span class="num" id="pos"></span></p>
+  <p><span id="caption"></span><small id="pos"></small></p>
 </dialog>
 
 <script>
-// The gallery. The first entry is the big one. To add a picture: put the file in the photos folder
-// and fill in its photo: "photos/your-file.jpg". Entries with photo: "" show as "Photo soon".
-const PHOTOS = [
+// The gallery. The first entry is the big one at the top.
+// To add a real photo: put it in the photos folder and set photo: "photos/your-file.jpg".
+// Until then a piece shows its drawing (drawn: ...) with a "Drawing · photo soon" label.
+const PIECES = [
   { name: "Stargazing Chair", photo: "photos/stargazing-chair.png" },
-  { name: "Wine & Glass Caddy", photo: "" },
-  { name: "Wine Bottle Wind Chimes", photo: "" },
-  { name: "Magic Wine Holder", photo: "" },
-  { name: "Folding Stool", photo: "" },
-  { name: "Beer Flight", photo: "" },
+  { name: "Wine & Glass Caddy", photo: "", drawn: "photos/drawn/caddy.jpg" },
+  { name: "Wine Bottle Wind Chimes", photo: "", drawn: "photos/drawn/chimes.jpg" },
+  { name: "Magic Wine Holder", photo: "", drawn: "photos/drawn/wine.jpg" },
+  { name: "Folding Stool", photo: "", drawn: "photos/drawn/stool.jpg" },
+  { name: "Beer Flight", photo: "", drawn: "photos/drawn/flight.jpg" },
 ];
-const SHOTS = PHOTOS.filter((p) => p.photo); // only real photos open in the viewer
 
-const viewer = document.getElementById("viewer"), grid = document.getElementById("grid");
+const viewer = document.getElementById("viewer"), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const pad = (n) => String(n).padStart(2, "0");
-document.getElementById("count").textContent = `${pad(PHOTOS.length)} pieces`;
-document.getElementById("year").textContent = new Date().getFullYear();
+const src = (p) => p.photo || p.drawn;
+const SHOWN = PIECES.filter(src);
+document.getElementById("count").textContent = `${PIECES.length} pieces`;
 let at = 0;
 
 function show(i) {
-  at = (i + SHOTS.length) % SHOTS.length;
-  const p = SHOTS[at], big = document.getElementById("big");
-  big.src = p.photo; big.alt = p.name;
+  at = (i + SHOWN.length) % SHOWN.length;
+  const p = SHOWN[at], big = document.getElementById("big");
+  big.src = src(p); big.alt = p.name;
   document.getElementById("caption").textContent = p.name;
-  document.getElementById("pos").textContent = SHOTS.length > 1 ? `${pad(at + 1)} / ${pad(SHOTS.length)}` : "";
-  for (const id of ["prev", "next"]) document.getElementById(id).hidden = SHOTS.length < 2;
+  document.getElementById("pos").textContent = (p.photo ? "" : "Drawing · photo soon   ") + `${pad(at + 1)} / ${pad(SHOWN.length)}`;
+  for (const id of ["prev", "next"]) document.getElementById(id).hidden = SHOWN.length < 2;
   if (!viewer.open) viewer.showModal();
 }
 
-PHOTOS.forEach((p, i) => {
-  const fig = document.createElement("figure");
-  fig.className = "piece" + (i === 0 ? " lead" : "");
-  const shot = document.createElement(p.photo ? "button" : "div");
-  shot.className = "shot" + (p.photo ? "" : " soon");
+function card(p) {
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "card";
+  btn.setAttribute("aria-label", "Open " + p.name);
   const img = document.createElement("img");
-  if (p.photo) {
-    shot.type = "button";
-    shot.setAttribute("aria-label", "Open photo: " + p.name);
-    img.src = p.photo; img.alt = p.name; img.loading = i === 0 ? "eager" : "lazy";
-    shot.addEventListener("click", () => show(SHOTS.indexOf(p)));
-  } else {
-    img.src = "logo.svg"; img.alt = "";
+  img.src = src(p); img.alt = p.photo ? p.name : "Drawing of " + p.name; img.loading = "lazy";
+  btn.appendChild(img);
+  if (!p.photo) { const c = document.createElement("span"); c.className = "chip"; c.textContent = "Drawing · photo soon"; btn.appendChild(c); }
+  btn.addEventListener("click", () => show(SHOWN.indexOf(p)));
+  if (!still) {
+    btn.addEventListener("pointermove", (e) => {
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty("--ry", (((e.clientX - r.left) / r.width - 0.5) * 7).toFixed(2) + "deg");
+      btn.style.setProperty("--rx", (-((e.clientY - r.top) / r.height - 0.5) * 7).toFixed(2) + "deg");
+    });
+    btn.addEventListener("pointerleave", () => { btn.style.removeProperty("--rx"); btn.style.removeProperty("--ry"); });
   }
-  shot.appendChild(img);
+  return btn;
+}
+
+PIECES.forEach((p, i) => {
+  if (!src(p)) return;
+  if (i === 0) { const f = card(p); f.querySelector("img").loading = "eager"; document.getElementById("featured").appendChild(f); return; }
+  const fig = document.createElement("figure");
+  fig.className = "piece";
+  fig.appendChild(card(p));
   const cap = document.createElement("figcaption");
   cap.className = "cap";
-  cap.innerHTML = `<span><span class="num"></span><span class="name"></span></span><span class="tagline"></span>`;
-  cap.querySelector(".num").textContent = pad(i + 1);
+  cap.innerHTML = `<span class="n"></span><span class="name"></span>`;
+  cap.querySelector(".n").textContent = pad(i + 1);
   cap.querySelector(".name").textContent = p.name;
-  cap.querySelector(".tagline").textContent = p.photo ? "" : "Photo soon";
-  fig.append(shot, cap);
-  grid.appendChild(fig);
+  fig.appendChild(cap);
+  document.getElementById("grid").appendChild(fig);
 });
 
 document.getElementById("close").onclick = () => viewer.close();
