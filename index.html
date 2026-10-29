@@ -6,6 +6,19 @@
 <title>LAA · Handmade Woodwork · South Amboy, NJ</title>
 <meta name="description" content="LAA: handmade woodwork from South Amboy, NJ.">
 <meta name="theme-color" content="#26342B">
+<link rel="canonical" href="https://laaworks.com/">
+<!-- the card shown when laaworks.com is shared in a text, post or email -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LAA">
+<meta property="og:url" content="https://laaworks.com/">
+<meta property="og:title" content="LAA · Handmade Woodwork">
+<meta property="og:description" content="Handmade woodwork from South Amboy, NJ. Request a piece or check on your order.">
+<meta property="og:image" content="https://laaworks.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The LAA logo next to a handmade stargazing chair">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="email-logo.png">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
   /* forest-green band for the mark, then the photos on a turning wheel */
@@ -155,6 +168,7 @@
   .form .btn { width: 100% }
   .felt .msg { grid-column: 1 / -1; margin: 0; font-size: 14px; color: #E9A38A; min-height: 0 }
   .felt .msg:empty { display: none }
+  .felt .privacy { margin: -2px 0 0; font-size: 12px; line-height: 1.45; color: rgb(169 195 166 / .8); text-align: center }
   .result { display: grid; gap: 14px; text-align: center; justify-items: center; padding: 6px 0 4px }
   .result .num { font: 700 30px/1 "Segoe UI", system-ui, sans-serif; color: var(--oak) }
   .result p { margin: 0 !important; color: var(--sage) }
@@ -255,6 +269,7 @@
         <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
         <p class="msg" id="o-msg" role="alert"></p>
         <button class="btn wide" type="submit">Send request</button>
+        <p class="wide privacy">Your details are only used for this order: to reply to you and keep you updated. They aren't shared or used for marketing.</p>
       </form>
       <div class="result" id="o-done" hidden aria-live="polite">
         <div class="num">Thank you</div>
@@ -278,6 +293,7 @@
           <a class="btn" id="s-pay-btn" target="_blank" rel="noopener"></a>
           <div class="alt" id="s-zelle" hidden></div>
         </div>
+        <img id="s-photo" alt="Your finished piece" hidden style="width:100%;border-radius:12px;display:block">
         <ol class="track" id="s-track"></ol>
         <div class="note" id="s-note" hidden></div>
         <button class="btn ghost" id="s-again" type="button">Check another order</button>
@@ -576,6 +592,8 @@ let openOrders = () => {};
       $("s-zelle").innerHTML = data.zelle
         ? `Or skip the card fee: Zelle ${esc(data.pay.amount)} to <b>${esc(data.zelle)}</b> with “Order #${data.number}” in the memo.` : "";
     }
+    $("s-photo").hidden = !data.photo;
+    if (data.photo) $("s-photo").src = data.photo;
     $("s-note").hidden = !data.note;
     $("s-note").textContent = data.note ? "From Lucas: " + data.note : "";
     sform.hidden = true; $("s-result").hidden = false;
