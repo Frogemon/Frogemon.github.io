@@ -156,7 +156,7 @@
   .felt .msg { grid-column: 1 / -1; margin: 0; font-size: 14px; color: #E9A38A; min-height: 0 }
   .felt .msg:empty { display: none }
   .result { display: grid; gap: 14px; text-align: center; justify-items: center; padding: 6px 0 4px }
-  .result .num { font: 700 34px/1 "Segoe UI", system-ui, sans-serif; color: var(--oak) }
+  .result .num { font: 700 30px/1 "Segoe UI", system-ui, sans-serif; color: var(--oak) }
   .result p { margin: 0 !important; color: var(--sage) }
   .track { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 0; text-align: left; width: 100% }
   .track li { position: relative; display: grid; gap: 2px; padding: 0 0 16px 30px; color: rgb(242 238 230 / .45) }
@@ -250,8 +250,7 @@
         <button class="btn wide" type="submit">Send request</button>
       </form>
       <div class="result" id="o-done" hidden aria-live="polite">
-        <p>Request received. Your order number is</p>
-        <div class="num" id="o-num"></div>
+        <div class="num">Thank you</div>
         <p id="o-done-text"></p>
         <button class="btn ghost" id="o-again" type="button">Request something else</button>
       </div>
@@ -526,8 +525,7 @@ let openOrders = () => {};
     const { status, data } = await post("/order", d);
     busy(form, false);
     if (status === 200 && data.ok) {
-      $("o-num").textContent = "#" + data.number;
-      $("o-done-text").textContent = (data.emailed ? `A copy is on its way to ${d.email}. ` : "Keep that number to check on it. ") + "I'll be in touch soon to confirm the details and the price.";
+      $("o-done-text").textContent = "Your request is in. " + (data.emailed ? `A copy is on its way to ${d.email}. ` : "") + "I'll be in touch soon to confirm the details and the price.";
       form.hidden = true; $("o-done").hidden = false;
       form.reset();
       return;
