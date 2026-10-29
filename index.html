@@ -169,6 +169,13 @@
   .track li.now { color: var(--cream) } .track li.now::before { background: var(--oak); border-color: var(--oak); box-shadow: 0 0 0 5px rgb(201 139 78 / .2) }
   .track li.now span { display: block; color: var(--sage) }
   .note { width: 100%; text-align: left; font-size: 14px; padding: 12px 14px; border-radius: 10px; background: rgb(0 0 0 / .2); border-left: 3px solid var(--oak) }
+  .pay { width: 100%; display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: rgb(242 238 230 / .06); border: 1px solid rgb(242 238 230 / .12); text-align: left }
+  .pay[hidden] { display: none }
+  .pay .btn { width: 100% }
+  .pay .alt { font-size: 13px; color: var(--sage); line-height: 1.45 }
+  .pay .alt b { color: var(--cream); font-weight: 600; user-select: all }
+  .chip { justify-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; padding: 5px 10px; border-radius: 999px; background: rgb(169 195 166 / .16); color: var(--sage) }
+  .chip[hidden] { display: none }
   @media (max-width: 420px) { .form { grid-template-columns: 1fr } }
   @media (prefers-reduced-motion: reduce) { .drawer, .shade, .mark { transition: none } .cta { animation: none } }
   @media (prefers-reduced-motion: reduce) { .card, .dots i, .card img { transition: none } .stage img, header img, header .rule, .wheel, .nav, .dots, footer img, #swell { animation: none } }
@@ -266,6 +273,11 @@
       </form>
       <div class="result" id="s-result" hidden aria-live="polite">
         <p id="s-head"></p>
+        <span class="chip" id="s-paid" hidden></span>
+        <div class="pay" id="s-pay" hidden>
+          <a class="btn" id="s-pay-btn" target="_blank" rel="noopener"></a>
+          <div class="alt" id="s-zelle" hidden></div>
+        </div>
         <ol class="track" id="s-track"></ol>
         <div class="note" id="s-note" hidden></div>
         <button class="btn ghost" id="s-again" type="button">Check another order</button>
@@ -554,6 +566,16 @@ let openOrders = () => {};
     $("s-head").innerHTML = `Order <b style="color:var(--cream)">#${data.number}</b>${data.piece ? " · " + esc(data.piece) : ""}${data.cancelled ? " · cancelled" : ""}`;
     $("s-track").innerHTML = data.cancelled ? "" : data.stages.map((s, i) =>
       `<li class="${i < data.stage ? "done" : i === data.stage ? "now" : ""}"${i === data.stage ? ' aria-current="step"' : ""}><b>${esc(s.name)}</b><span>${esc(s.blurb)}</span></li>`).join("");
+    $("s-paid").hidden = !(data.paid || data.depositPaid);
+    $("s-paid").textContent = data.paid ? "Paid in full" : "Deposit received";
+    $("s-pay").hidden = !data.pay;
+    if (data.pay) {
+      $("s-pay-btn").href = data.pay.url;
+      $("s-pay-btn").textContent = `Pay ${data.pay.amount}${data.pay.label ? " " + data.pay.label : ""} by card`;
+      $("s-zelle").hidden = !data.zelle;
+      $("s-zelle").innerHTML = data.zelle
+        ? `Or skip the card fee: Zelle ${esc(data.pay.amount)} to <b>${esc(data.zelle)}</b> with “Order #${data.number}” in the memo.` : "";
+    }
     $("s-note").hidden = !data.note;
     $("s-note").textContent = data.note ? "From Lucas: " + data.note : "";
     sform.hidden = true; $("s-result").hidden = false;
