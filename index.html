@@ -124,7 +124,53 @@
   .line span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: all }
   .line button { all: unset; cursor: pointer; flex: none; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--sage); padding: 4px 8px; border-radius: 6px }
   .line button:hover { color: var(--cream) } .line button:focus-visible { outline: 2px solid var(--oak) }
-  @media (prefers-reduced-motion: reduce) { .drawer, .shade, .mark { transition: none } }
+  /* orders: a call to action under the wheel, and a second drawer holding the form and the status lookup */
+  .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; animation: fade .8s 1.3s ease-out both }
+  .btn { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px; background: var(--oak); color: #1A1410; box-shadow: 0 10px 24px -14px rgb(201 139 78 / .9); transition: transform .2s, filter .2s }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.06) }
+  .btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px }
+  .btn.ghost { background: rgb(242 238 230 / .07); color: var(--cream); box-shadow: none; border: 1px solid rgb(242 238 230 / .16) }
+  .btn[disabled] { opacity: .55; cursor: progress; transform: none }
+  .stage .order-this { background: var(--oak); color: #1A1410; padding: 0 22px; min-height: 46px; position: fixed; left: 50%; translate: -50% 0; bottom: max(20px, env(safe-area-inset-bottom)); top: auto; right: auto; width: auto; height: auto; font-size: 15px; border-radius: 999px }
+  #orders .felt { max-height: min(78svh, 760px); overflow-y: auto; overscroll-behavior: contain; padding-top: 4px }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: rgb(0 0 0 / .22) }
+  .tabs button { all: unset; cursor: pointer; text-align: center; padding: 9px 0; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--sage); transition: background .2s, color .2s }
+  .tabs button[aria-selected="true"] { background: rgb(242 238 230 / .12); color: var(--cream) }
+  .tabs button:focus-visible { outline: 2px solid var(--oak) }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+  .form[hidden], .result[hidden] { display: none }
+  .form label { display: grid; gap: 5px; font-size: 13px; color: var(--sage); min-width: 0 }
+  .form label.wide, .form .wide { grid-column: 1 / -1 }
+  .form label small { color: rgb(169 195 166 / .7) }
+  .form input, .form select, .form textarea { font: inherit; font-size: 16px; color: var(--cream); background: rgb(0 0 0 / .22); border: 1px solid rgb(242 238 230 / .14); border-radius: 10px; padding: 10px 12px; width: 100%; min-width: 0 }
+  .form select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--sage) 50%), linear-gradient(135deg, var(--sage) 50%, transparent 50%);
+    background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 30px }
+  .form select option { background: #1A231D }
+  .form textarea { resize: vertical; min-height: 84px }
+  .form input:focus, .form select:focus, .form textarea:focus { outline: 2px solid var(--oak); outline-offset: 0; border-color: transparent }
+  .form input::placeholder, .form textarea::placeholder { color: rgb(242 238 230 / .32) }
+  .form input[type="date"] { color-scheme: dark }
+  .form .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden }
+  .form .btn { width: 100% }
+  .felt .msg { grid-column: 1 / -1; margin: 0; font-size: 14px; color: #E9A38A; min-height: 0 }
+  .felt .msg:empty { display: none }
+  .result { display: grid; gap: 14px; text-align: center; justify-items: center; padding: 6px 0 4px }
+  .result .num { font: 700 34px/1 "Segoe UI", system-ui, sans-serif; color: var(--oak) }
+  .result p { margin: 0 !important; color: var(--sage) }
+  .track { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 0; text-align: left; width: 100% }
+  .track li { position: relative; display: grid; gap: 2px; padding: 0 0 16px 30px; color: rgb(242 238 230 / .45) }
+  .track li::before { content: ""; position: absolute; left: 4px; top: 5px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgb(242 238 230 / .25); background: #1D2721 }
+  .track li::after { content: ""; position: absolute; left: 10px; top: 21px; bottom: 1px; width: 2px; background: rgb(242 238 230 / .14) }
+  .track li:last-child::after { display: none }
+  .track li b { font-weight: 600; font-size: 15px }
+  .track li span { font-size: 13px; display: none }
+  .track li.done { color: var(--cream) } .track li.done::before { background: var(--sage); border-color: var(--sage) } .track li.done::after { background: var(--sage) }
+  .track li.now { color: var(--cream) } .track li.now::before { background: var(--oak); border-color: var(--oak); box-shadow: 0 0 0 5px rgb(201 139 78 / .2) }
+  .track li.now span { display: block; color: var(--sage) }
+  .note { width: 100%; text-align: left; font-size: 14px; padding: 12px 14px; border-radius: 10px; background: rgb(0 0 0 / .2); border-left: 3px solid var(--oak) }
+  @media (max-width: 420px) { .form { grid-template-columns: 1fr } }
+  @media (prefers-reduced-motion: reduce) { .drawer, .shade, .mark { transition: none } .cta { animation: none } }
   @media (prefers-reduced-motion: reduce) { .card, .dots i, .card img { transition: none } .stage img, header img, header .rule, .wheel, .nav, .dots, footer img, #swell { animation: none } }
 </style>
 </head>
@@ -145,6 +191,10 @@
     <button class="nav" id="next" aria-label="Next photo">›</button>
   </div>
   <div class="dots" id="dots" aria-hidden="true"></div>
+  <div class="cta">
+    <button class="btn" data-order="request" aria-haspopup="dialog">Request an order</button>
+    <button class="btn ghost" data-order="status" aria-haspopup="dialog">Check an order</button>
+  </div>
 </main>
 
 <footer>
@@ -168,12 +218,67 @@
       <div class="line"><span id="d-phone"></span><button data-copy="phone">Copy</button></div>
       <div class="line"><span id="d-email"></span><button data-copy="email">Copy</button></div>
     </div>
+    <button class="btn" data-order="request">Request an order</button>
+  </div>
+</div>
+
+<div class="drawer" id="orders" role="dialog" aria-modal="true" aria-labelledby="o-title" hidden>
+  <div class="drawer-front"><span class="knob"></span><button id="o-close" aria-label="Close the drawer">×</button></div>
+  <div class="felt">
+    <h2 id="o-title">Orders</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t-request" aria-controls="p-request" aria-selected="true">Request</button>
+      <button role="tab" id="t-status" aria-controls="p-status" aria-selected="false">Check status</button>
+    </div>
+
+    <div id="p-request" role="tabpanel" aria-labelledby="t-request">
+      <form class="form" id="order-form" novalidate>
+        <p class="wide" style="margin:0">Tell me what you'd like. I'll get back to you to confirm the details and the price before anything is made.</p>
+        <label class="wide">Piece<select name="piece" id="o-piece" required></select></label>
+        <label>Wood<select name="wood">
+          <option value="">Your pick</option><option>Maple</option><option>Walnut</option><option>Cherry</option><option>Oak</option><option>Something else (say in notes)</option>
+        </select></label>
+        <label>Quantity<input name="quantity" type="number" min="1" max="50" value="1" inputmode="numeric"></label>
+        <label><span>Engraving <small>optional</small></span><input name="engraving" maxlength="60" placeholder="Initials, a name, a date"></label>
+        <label><span>Needed by <small>optional</small></span><input name="needBy" type="date"></label>
+        <label class="wide"><span>Notes <small>optional</small></span><textarea name="notes" maxlength="3000" placeholder="Size, finish, colors, who it's for…"></textarea></label>
+        <label class="wide">Your name<input name="name" autocomplete="name" maxlength="100" required></label>
+        <label>Email<input name="email" type="email" autocomplete="email" maxlength="200" required></label>
+        <label><span>Phone <small>optional</small></span><input name="phone" type="tel" autocomplete="tel" maxlength="30"></label>
+        <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="msg" id="o-msg" role="alert"></p>
+        <button class="btn wide" type="submit">Send request</button>
+      </form>
+      <div class="result" id="o-done" hidden aria-live="polite">
+        <p>Request received. Your order number is</p>
+        <div class="num" id="o-num"></div>
+        <p id="o-done-text"></p>
+        <button class="btn ghost" id="o-again" type="button">Request something else</button>
+      </div>
+    </div>
+
+    <div id="p-status" role="tabpanel" aria-labelledby="t-status" hidden>
+      <form class="form" id="status-form" novalidate>
+        <p class="wide" style="margin:0">Use the order number from your email and the address you ordered with.</p>
+        <label>Order number<input name="number" inputmode="numeric" placeholder="12" required></label>
+        <label>Email<input name="email" type="email" autocomplete="email" required></label>
+        <p class="msg" id="s-msg" role="alert"></p>
+        <button class="btn wide" type="submit">Check</button>
+      </form>
+      <div class="result" id="s-result" hidden aria-live="polite">
+        <p id="s-head"></p>
+        <ol class="track" id="s-track"></ol>
+        <div class="note" id="s-note" hidden></div>
+        <button class="btn ghost" id="s-again" type="button">Check another order</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="stage" id="stage" hidden role="dialog" aria-modal="true" aria-label="Photo">
   <img id="s-img" alt="">
   <button id="s-close" aria-label="Close">×</button>
+  <button class="btn order-this" id="s-order">Order this</button>
 </div>
 
 <script>
@@ -305,6 +410,30 @@ wheel.addEventListener("keydown", (e) => {
 });
 new ResizeObserver(place).observe(wheel);
 
+// the drawers: one open at a time over a shared shade; switching swaps them in place
+const sheets = (() => {
+  const shade = document.getElementById("shade");
+  let current = null, opener = null, timer = 0;
+  function open(el, from) {
+    if (current === el) return;
+    clearTimeout(timer);
+    if (current) { current.classList.remove("open"); current.hidden = true; } else opener = from || document.activeElement;
+    current = el;
+    el.hidden = shade.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.add("open"); shade.classList.add("open"); }));
+    setTimeout(() => el.querySelector(".drawer-front button").focus(), 300);
+  }
+  function close() {
+    if (!current) return;
+    const el = current; current = null;
+    el.classList.remove("open"); shade.classList.remove("open");
+    timer = setTimeout(() => { el.hidden = shade.hidden = true; opener?.focus?.(); }, still ? 0 : 650);
+  }
+  shade.onclick = close;
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && current) close(); });
+  return { open, close };
+})();
+
 // the contact drawer
 (() => {
   const who = ["Lucas", "Amaniera"].join(" ");
@@ -317,21 +446,9 @@ new ResizeObserver(place).observe(wheel);
   $("d-call").href = "tel:" + phone;
   $("d-text").href = "sms:" + phone;
   $("d-mail").href = "mailto:" + email + "?subject=" + encodeURIComponent("Hello from your LAA site");
-  const drawer = $("drawer"), shade = $("shade"), marks = document.querySelectorAll("[data-open-card]");
-  let opener = null;
-  const open = () => {
-    drawer.hidden = shade.hidden = false;
-    requestAnimationFrame(() => requestAnimationFrame(() => { drawer.classList.add("open"); shade.classList.add("open"); }));
-    setTimeout(() => $("d-close").focus(), 300);
-  };
-  const close = () => {
-    drawer.classList.remove("open"); shade.classList.remove("open");
-    setTimeout(() => { drawer.hidden = shade.hidden = true; opener?.focus(); }, still ? 0 : 650);
-  };
-  marks.forEach((m) => m.addEventListener("click", () => { opener = m; open(); }));
-  $("d-close").onclick = close;
-  shade.onclick = close;
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) close(); });
+  const drawer = $("drawer");
+  document.querySelectorAll("[data-open-card]").forEach((m) => m.addEventListener("click", () => sheets.open(drawer, m)));
+  $("d-close").onclick = () => sheets.close();
   drawer.addEventListener("click", async (e) => {
     const b = e.target.closest("[data-copy]"); if (!b) return;
     const text = b.dataset.copy === "phone" ? $("d-phone").textContent : email;
@@ -352,6 +469,99 @@ function closeView() { stage.hidden = true; document.body.style.overflow = ""; w
 document.getElementById("s-close").onclick = closeView;
 stage.addEventListener("click", (e) => { if (e.target === stage) closeView(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !stage.hidden) closeView(); });
+
+// orders: the request form and the status lookup, both sent to the order Worker
+const ORDERS = "https://orders.laaworks.com";
+let openOrders = () => {};
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const sheet = $("orders"), pieceSel = $("o-piece");
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  pieceSel.innerHTML = PHOTOS.map((p) => `<option>${esc(p.name)}</option>`).join("") + '<option value="Something custom">Something custom (say in notes)</option>';
+
+  const tabs = { request: $("t-request"), status: $("t-status") };
+  function show(which) {
+    for (const [k, t] of Object.entries(tabs)) { t.setAttribute("aria-selected", String(k === which)); $("p-" + k).hidden = k !== which; }
+  }
+  tabs.request.onclick = () => show("request");
+  tabs.status.onclick = () => show("status");
+  sheet.querySelector(".tabs").addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    const next = tabs.request.getAttribute("aria-selected") === "true" ? "status" : "request";
+    show(next); tabs[next].focus();
+  });
+
+  openOrders = (which, piece, from) => {
+    show(which);
+    if (piece) pieceSel.value = piece;
+    sheets.open(sheet, from);
+  };
+  document.querySelectorAll("[data-order]").forEach((b) =>
+    b.addEventListener("click", () => openOrders(b.dataset.order, b.dataset.order === "request" ? PHOTOS[front()].name : "", b)));
+  $("o-close").onclick = () => sheets.close();
+  $("s-order").onclick = () => { const name = PHOTOS[front()].name; closeView(); openOrders("request", name, wheel); };
+
+  async function post(path, body) {
+    try {
+      const res = await fetch(ORDERS + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      return { status: res.status, data: await res.json().catch(() => ({})) };
+    } catch { return { status: 0, data: {} }; }
+  }
+  const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+  function busy(form, on, label) {
+    const b = form.querySelector('[type="submit"]');
+    b.disabled = on; b.textContent = on ? label : b.dataset.label || b.textContent;
+  }
+  document.querySelectorAll('.form [type="submit"]').forEach((b) => (b.dataset.label = b.textContent));
+
+  // request
+  const form = $("order-form"), msg = $("o-msg");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    d.name = d.name.trim(); d.email = d.email.trim();
+    msg.textContent = !d.name ? "Add your name." : !validEmail(d.email) ? "That email doesn't look right." : "";
+    if (msg.textContent) return form.querySelector(!d.name ? '[name="name"]' : '[name="email"]').focus();
+    busy(form, true, "Sending…");
+    const { status, data } = await post("/order", d);
+    busy(form, false);
+    if (status === 200 && data.ok) {
+      $("o-num").textContent = "#" + data.number;
+      $("o-done-text").textContent = (data.emailed ? `A copy is on its way to ${d.email}. ` : "Keep that number to check on it. ") + "I'll be in touch soon to confirm the details and the price.";
+      form.hidden = true; $("o-done").hidden = false;
+      form.reset();
+      return;
+    }
+    msg.textContent = status === 429
+      ? "That's a lot of requests at once. Give it a minute and try again."
+      : "That didn't go through. Try again, or tap the logo to call, text or email me instead.";
+  });
+  $("o-again").onclick = () => { $("o-done").hidden = true; form.hidden = false; pieceSel.focus(); };
+
+  // status
+  const sform = $("status-form"), smsg = $("s-msg");
+  sform.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const number = sform.number.value.replace(/\D/g, ""), email = sform.email.value.trim();
+    smsg.textContent = !number ? "Add your order number." : !validEmail(email) ? "That email doesn't look right." : "";
+    if (smsg.textContent) return;
+    busy(sform, true, "Checking…");
+    const { status, data } = await post("/status", { number, email });
+    busy(sform, false);
+    if (status !== 200 || !data.ok) {
+      smsg.textContent = status === 404 ? "No order matches that number and email. Check both against your receipt."
+        : status === 429 ? "Too many tries. Give it a minute." : "Couldn't check right now. Try again in a bit.";
+      return;
+    }
+    $("s-head").innerHTML = `Order <b style="color:var(--cream)">#${data.number}</b>${data.piece ? " · " + esc(data.piece) : ""}${data.cancelled ? " · cancelled" : ""}`;
+    $("s-track").innerHTML = data.cancelled ? "" : data.stages.map((s, i) =>
+      `<li class="${i < data.stage ? "done" : i === data.stage ? "now" : ""}"${i === data.stage ? ' aria-current="step"' : ""}><b>${esc(s.name)}</b><span>${esc(s.blurb)}</span></li>`).join("");
+    $("s-note").hidden = !data.note;
+    $("s-note").textContent = data.note ? "From Lucas: " + data.note : "";
+    sform.hidden = true; $("s-result").hidden = false;
+  });
+  $("s-again").onclick = () => { $("s-result").hidden = true; sform.hidden = false; sform.number.focus(); };
+})();
 
 // the swell field: dot size and depth follow two slow, crossing waves; damped near the centre
 (() => {
@@ -419,6 +629,9 @@ place();
 // arrival: the fan sweeps round to the first photo (called once the splash has lifted)
 function arrive() { if (still) return; pos = -2.5; target = 0; draw(); prev = 0; raf = requestAnimationFrame(tick); }
 if (document.getElementById("splash")) { if (!still) { pos = -2.5; draw(); } afterSplash = () => setTimeout(arrive, 250); } else arrive();
+// links from order emails: /#order opens the form, /#status the lookup (once the splash has lifted)
+const deep = { "#order": "request", "#status": "status" }[location.hash];
+if (deep) { const then = afterSplash; afterSplash = () => { then(); setTimeout(() => openOrders(deep), 600); }; }
 </script>
 </body>
 </html>
